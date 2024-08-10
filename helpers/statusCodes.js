@@ -1,0 +1,28 @@
+exports.notFound = (res,msg) =>{
+    return res.status(404).json({"msg":msg, success:false})
+}
+
+exports.generalError = (res, msg) =>{
+    return res.status(400).json({"msg":msg, success:false})
+}
+
+exports.success = (res, d, msg) => {
+    return res.status(200).json({success:true, d, "msg":msg??""})
+}
+
+exports.unAuthorized = (res, msg) => {
+    return res.status(401).json({"msg":msg, success:false})
+}
+
+exports.expired = (res, msg) =>{
+    return res.status(403).json({"msg":msg, success:false})
+}
+
+exports.invalid = (res, msg) =>{
+    return res.status(498).json({"msg":msg, success:false})
+}
+
+exports.newError = (res, msg, statusC) =>{
+    return res.status(statusC).json({"msg":msg, success:false})
+}
+
