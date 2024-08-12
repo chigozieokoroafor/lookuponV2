@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,7 @@
     "lookupon_node": "file:",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.0",
-    "node-mailer": "^0.1.1",
+    "nodemailer": "^6.9.14",
     "nodemon": "^3.1.4",
     "rand-token": "^1.0.1",
     "sequelize": "^6.37.3"

@@ -30,6 +30,10 @@ exports.newError = (res, msg, statusC) =>{
     return res.status(statusC).json({"msg":msg, success:false})
 }
 
+exports.exists = (res, msg) =>{
+    return res.status(409).json({"msg":msg, success:false})
+}
+
 exports.internalServerError = (res, msg) =>{
     return res.status(500).json({"msg":msg, success:false})
 }

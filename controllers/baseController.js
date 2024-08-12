@@ -4,9 +4,10 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Profile } = require('../db/model');
-const { generateAccessToken, destructureToken, createRedirectUrl, mailSend } = require('../helpers/util');
+const { backend_url, destructureToken, createRedirectUrl, mailSend, generateToken } = require('../helpers/util');
 const { createUser, getUser } = require('../db/query');
-const { success, notAcceptable, notFound, invalid, internalServerError, generalError } = require('../helpers/statusCodes');
+const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists } = require('../helpers/statusCodes');
+
 
 
 // Create Account
@@ -14,45 +15,43 @@ exports.createAccount = async (req, res) => {
   const { email, password, first_name, last_name, firebase_auth } = req.body;
 
   if (!email || !password || !first_name || !last_name) {
-    return res.status(400).json({ msg: 'Required fields missing or empty' });
+    return generalError(res, 'Required fields missing or empty')
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 8);
+  
 
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ msg: 'Account with email exists' });
+      return exists(res, 'Account with email exists')
     }
+    const hashedPassword = bcrypt.hashSync(password, 8);
     const data = {
       email,
       password: hashedPassword,
       first_name,
       last_name,
     }
-    await createUser(data)
+    const user = await createUser(data)
     // const user = await User.create();
 
-    await Profile.create({
-      user_id: user.id,
-      firebase_auth,
-    });
+    // await Profile.create({
+    //   user_id: user.id,
+    //   firebase_auth,
+    // });
 
-    const verificationUri = createRedirectUrl(req, { id: user.id }, 'email_verification', 'verify');
+    // const verificationUri = createRedirectUrl(req, { id: user.id }, 'email_verification', 'verify');
+    const token = generateToken({id:user.uid}, 1*5*60)
+    const verificationUri = backend_url+`/auth/verify?token=${token}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
-    const mailSent = await mailSend(email, emailTemp, 'Test Verification');
+    const mailSent = mailSend("Account verification",email, emailTemp);
 
-
-    // if (!mailSent) {
-    //   return res.status(400).json({ msg: 'Error occurred while sending mail' });
-    // }
-
-    // res.status(201).json({ msg: 'Account Created, kindly check mail provided for verification link.' });
     success(res, {}, 'Account Created, kindly check mail provided for verification link.')
     
   } catch (error) {
     console.error(error);
-    res.status(400).json({ msg: 'Error occurred while creating account' });
+
+    res.status(400).json({ msg: 'Error occurred while creating account' }); 
   }
 };
 

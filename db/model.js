@@ -207,9 +207,9 @@ const Review = conn.define('Review', {
 
 async function sync(){
   // await Profile.sync({alter:true})
-  await Business.sync({alter:true})
-  await User.sync({alter:true})
-  await Review.sync({alter:true})
+  // await Business.sync({alter:true})
+  // await User.sync({alter:true})
+  // await Review.sync({alter:true})
   // await Product.sync({alter:true})
   // await ProductImage.sync({alter:true})
   // await Catalogue.sync({alter:true})
