@@ -5,10 +5,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Profile } = require('../db/model');
 const { generateAccessToken, destructureToken, createRedirectUrl, mailSend } = require('../helpers/util');
-const router = express.Router();
+const { createUser, getUser } = require('../db/query');
+const { success, notAcceptable, notFound, invalid, internalServerError, generalError } = require('../helpers/statusCodes');
+
 
 // Create Account
-router.post('/create-account', async (req, res) => {
+exports.createAccount = async (req, res) => {
   const { email, password, first_name, last_name, firebase_auth } = req.body;
 
   if (!email || !password || !first_name || !last_name) {
@@ -22,13 +24,14 @@ router.post('/create-account', async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ msg: 'Account with email exists' });
     }
-
-    const user = await User.create({
+    const data = {
       email,
       password: hashedPassword,
       first_name,
       last_name,
-    });
+    }
+    await createUser(data)
+    // const user = await User.create();
 
     await Profile.create({
       user_id: user.id,
@@ -39,51 +42,58 @@ router.post('/create-account', async (req, res) => {
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
     const mailSent = await mailSend(email, emailTemp, 'Test Verification');
 
-    if (!mailSent) {
-      return res.status(400).json({ msg: 'Error occurred while sending mail' });
-    }
 
-    res.status(201).json({ msg: 'Account Created, kindly check mail provided for verification link.' });
+    // if (!mailSent) {
+    //   return res.status(400).json({ msg: 'Error occurred while sending mail' });
+    // }
+
+    // res.status(201).json({ msg: 'Account Created, kindly check mail provided for verification link.' });
+    success(res, {}, 'Account Created, kindly check mail provided for verification link.')
+    
   } catch (error) {
     console.error(error);
     res.status(400).json({ msg: 'Error occurred while creating account' });
   }
-});
+};
 
 // Sign In
-router.post('/sign-in', async (req, res) => {
+exports.signin =async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(406).json({ msg: 'Email and password fields required' });
+    // return res.status(406).json({ msg: 'Email and password fields required' });
+    return notAcceptable(res, 'Email and password fields required')
   }
 
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await getUser({email:email})
+
     if (!user) {
-      return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
+      // return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
+      return notFound(res, "Account with credentials provided doesn't exist")
     }
 
     const passwordIsValid = bcrypt.compareSync(password, user.password);
     if (!passwordIsValid) {
-      return res.status(401).json({ msg: 'Invalid password' });
+      // return res.status(401).json({ msg: 'Invalid password' });
+      return generalError(res, "Invalid credentials")
     }
 
     const token = generateAccessToken({ id: user.id });
-    res.status(200).json({ token });
+    return success(res, {token}, "")
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: 'Error occurred while signing in' });
+    return internalServerError(res, 'Error occurred while signing in')
   }
-});
+};
 
 // Send Verification Email
-router.get('/send-verification', (req, res) => {
+exports.sendVerification = async (req, res) => {
   res.send('<p>Verification email template</p>'); // Adjust the email template as needed
-});
+};
 
 // Verify Email
-router.get('/verify', async (req, res) => {
+exports.verify = async (req, res) => {
   const { token } = req.query;
 
   const data = destructureToken(token, 'email_verification');
@@ -105,10 +115,10 @@ router.get('/verify', async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while verifying account' });
   }
-});
+};
 
 // Send Password Reset Email
-router.post('/send-password-reset-mail', async (req, res) => {
+exports.requestPasswordReset = async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -131,10 +141,10 @@ router.post('/send-password-reset-mail', async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while sending password reset mail' });
   }
-});
+};
 
 // Update Password
-router.post('/update-password', async (req, res) => {
+exports.updatePassword = async (req, res) => {
   const { token } = req.query;
   const { password } = req.body;
 
@@ -166,6 +176,6 @@ router.post('/update-password', async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while updating password' });
   }
-});
+};
 
-module.exports = router;
+

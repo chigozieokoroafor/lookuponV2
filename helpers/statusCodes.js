@@ -2,6 +2,10 @@ exports.notFound = (res,msg) =>{
     return res.status(404).json({"msg":msg, success:false})
 }
 
+exports.notAcceptable = (res, msg) =>{
+    return res.status(406).json({msg, success:false})
+}
+
 exports.generalError = (res, msg) =>{
     return res.status(400).json({"msg":msg, success:false})
 }
@@ -24,5 +28,9 @@ exports.invalid = (res, msg) =>{
 
 exports.newError = (res, msg, statusC) =>{
     return res.status(statusC).json({"msg":msg, success:false})
+}
+
+exports.internalServerError = (res, msg) =>{
+    return res.status(500).json({"msg":msg, success:false})
 }
 
