@@ -5,5 +5,7 @@ const router = Router();
 
 router.post("/auth/createAccount", createAccount)
 router.post("/auth/signin", signin)
+router.post("/auth/passwordReset", requestPasswordReset)
+router.post('/auth/password/update', updatePassword)
 
 exports.router = router

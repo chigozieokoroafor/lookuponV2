@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Profile } = require('../db/model');
 const { backend_url, destructureToken, createRedirectUrl, mailSend, generateToken } = require('../helpers/util');
-const { createUser, getUser } = require('../db/query');
-const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists } = require('../helpers/statusCodes');
+const { createUser, getUser, updateUser } = require('../db/query');
+const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists, expired } = require('../helpers/statusCodes');
 
 
 
@@ -17,8 +17,6 @@ exports.createAccount = async (req, res) => {
   if (!email || !password || !first_name || !last_name) {
     return generalError(res, 'Required fields missing or empty')
   }
-
-  
 
   try {
     const existingUser = await User.findOne({ where: { email } });
@@ -33,23 +31,17 @@ exports.createAccount = async (req, res) => {
       last_name,
     }
     const user = await createUser(data)
-    // const user = await User.create();
-
-    // await Profile.create({
-    //   user_id: user.id,
-    //   firebase_auth,
-    // });
-
-    // const verificationUri = createRedirectUrl(req, { id: user.id }, 'email_verification', 'verify');
-    const token = generateToken({id:user.uid}, 1*5*60)
-    const verificationUri = backend_url+`/auth/verify?token=${token}`
+  
+    const token = generateToken({email:email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
+    // const verificationUri = backend_url+`/auth/verify?token=${token}`
+    const verificationUri = `https://lookupon.vercel.app/verification?token=${token}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
-    const mailSent = mailSend("Account verification",email, emailTemp);
+    mailSend("Account verification",email, emailTemp);
 
     success(res, {}, 'Account Created, kindly check mail provided for verification link.')
     
   } catch (error) {
-    console.error(error);
+    // console.error(error);
 
     res.status(400).json({ msg: 'Error occurred while creating account' }); 
   }
@@ -78,7 +70,7 @@ exports.signin =async (req, res) => {
       return generalError(res, "Invalid credentials")
     }
 
-    const token = generateAccessToken({ id: user.id });
+    const token = generateToken({ id: user.uid }, 1*60*60);
     return success(res, {token}, "")
   } catch (error) {
     console.error(error);
@@ -86,10 +78,6 @@ exports.signin =async (req, res) => {
   }
 };
 
-// Send Verification Email
-exports.sendVerification = async (req, res) => {
-  res.send('<p>Verification email template</p>'); // Adjust the email template as needed
-};
 
 // Verify Email
 exports.verify = async (req, res) => {
@@ -97,19 +85,24 @@ exports.verify = async (req, res) => {
 
   const data = destructureToken(token, 'email_verification');
   if (!data) {
-    return res.status(410).json({ msg: 'Verification Link expired, Kindly request for another to verify account' });
+    // return res.status(410).json({ msg: 'Verification Link expired, Kindly request for another to verify account' });
+    return expired(res, "Session expired")
   }
 
   try {
-    const user = await User.findByPk(data.id);
-    if (!user) {
-      return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
-    }
+    const update = await updateUser({email:data})
+    console.log(update)
 
-    user.account_verified = true;
-    await user.save();
+    // const user = await User.findByPk(data.id);
+    // if (!user) {
+    //   return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
+    // }
 
-    res.send('<p>Welcome! Your account has been verified.</p>'); // Adjust the welcome template as needed
+    // user.account_verified = true;
+    // await user.save();
+
+    // res.send('<p>Welcome! Your account has been verified.</p>'); // Adjust the welcome template as needed
+    return success(res, {}, "Verified")
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while verifying account' });
@@ -121,21 +114,23 @@ exports.requestPasswordReset = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = getUser({email})
     if (!user) {
-      return res.status(404).json({ msg: 'Account with email not found' });
+      // return res.status(404).json({ msg: 'Account with email not found' });
+      return notFound(res, "Account with mail not found")
     }
-
-    const token = generateAccessToken({ email }, 'password_reset');
-    const PWD_RESET_URL = `${process.env.PWD_RESET_URL}?token=${token}`;
+    
+    const token = generateToken({ email }, 1*5*60, process.env.PWD_RESET_KEY);
+    console.log(token)
+    const PWD_RESET_URL = `https://lookupon.vercel.app/reset-password?token=${token}`
     const emailTemp = `<p>Click <a href="${PWD_RESET_URL}">here</a> to reset your password.</p>`; // Adjust the email template as needed
-    const mailSent = await mailSend(email, emailTemp, 'Password Reset Request');
+    const mailSent =  mailSend(email, emailTemp, 'Password Reset Request');
 
     if (!mailSent) {
       return res.status(400).json({ msg: 'Error occurred while sending mail' });
     }
 
-    res.status(200).json({ msg: 'Password reset mail sent' });
+    return success(res, {}, 'Password reset mail sent')
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while sending password reset mail' });
@@ -151,26 +146,22 @@ exports.updatePassword = async (req, res) => {
     return res.status(401).json({ msg: 'Unauthorized' });
   }
 
-  const data = destructureToken(token, 'password_reset');
+  const data = destructureToken(token, process.env.PWD_RESET_KEY);
+  
   if (!data) {
-    return res.status(410).json({ msg: 'Token expired' });
+    return expired(res, "Verification link expired")
+    // return res.status(410).json({ msg: 'Token expired' });
   }
 
   if (!password) {
-    return res.status(412).json({ msg: 'New password required' });
+    return res.status(412).json({ msg: 'New password required', "success":false});
   }
 
   try {
-    const user = await User.findOne({ where: { email: data.email } });
-    if (!user) {
-      return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
-    }
-
     const hashedPassword = bcrypt.hashSync(password, 8);
-    user.password = hashedPassword;
-    await user.save();
+    await updateUser({ email: data.email }, {password:hashedPassword})
 
-    res.status(200).json({ msg: 'Password updated' });
+    return success(res,{} ,"Password updated")
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while updating password' });

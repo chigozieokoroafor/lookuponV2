@@ -10,7 +10,7 @@ class Auth {
         }
     }
 
-    destructure_token = (req, res, next) => {
+    auth = (req, res, next) => {
         
 
         if (!req?.headers?.authorization) {
@@ -51,14 +51,10 @@ class Auth {
         };
         return next(); // Proceed to next middleware even if there's an error
     }
-
-    auth = async (req, res, next) => {
-        this.destructure_token(req, res, next);
-    }
 }
 
-const admin_auth = (req, res, next) => {
-    new Auth(process.env.ADMIN_SECRET).auth(req, res, () => {
+const baseAuth = (req, res, next) => {
+    new Auth(process.env.AUTH_KEY).auth(req, res, () => {
         if (req?.err?.err) {
             return newError(res, req.err.err, req.err.status);
         } else if (!req?.user?.uid) {
@@ -68,16 +64,16 @@ const admin_auth = (req, res, next) => {
     });
 }
 
-const student_auth = (req, res, next) => {
-    new Auth(process.env.STUDENT_SECRET).auth(req, res, () => {
+// const student_auth = (req, res, next) => {
+//     new Auth(process.env.STUDENT_SECRET).auth(req, res, () => {
         
-        if (req?.err?.err) {
-            return newError(res, req.err.err, req.err.status);
-        } else if (!req?.user?.matric_no) {
-            return unAuthorized(res, "Unauthorized");
-        }
-        next();
-    });
-}
+//         if (req?.err?.err) {
+//             return newError(res, req.err.err, req.err.status);
+//         } else if (!req?.user?.matric_no) {
+//             return unAuthorized(res, "Unauthorized");
+//         }
+//         next();
+//     });
+// }
 
-module.exports = { admin_auth, student_auth }
+module.exports = { baseAuth }
