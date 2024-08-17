@@ -13,13 +13,19 @@ exports.generateToken = (payload, time, s) =>{
 exports.mailSend = (subject, to, html, attachments) => { //attachments should be an array
     try {
       const smtpTransport = nodemailer.createTransport({
+        service:"gmail",
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
-        secure: false,
+        secure: true,
+        // debug:true,
+        // logger:true,
         auth: {
+          type:"LOGIN",
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PWD,
-        }
+        },
+        // connectionTimeout: 10000, // increase timeout
+        // greetingTimeout: 10000
       });
   
       const mailOptions = {

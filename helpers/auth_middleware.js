@@ -64,6 +64,19 @@ const baseAuth = (req, res, next) => {
     });
 }
 
+// const businessBaseAuth = (req, res, next)=>{
+//     new Auth(process.env.AUTH_KEY).auth(req, res, () => {
+//         if (req?.err?.err) {
+//             return newError(res, req.err.err, req.err.status);
+//         } else if (!req?.user?.uid) {
+//             return unAuthorized(res, "Unauthorized");
+//         }
+        
+
+//         next();
+//     });
+// }
+
 // const student_auth = (req, res, next) => {
 //     new Auth(process.env.STUDENT_SECRET).auth(req, res, () => {
         

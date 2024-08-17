@@ -4,10 +4,10 @@ const {DataTypes} = require("sequelize")
 // const account = conn.define("accounts")
 const User = conn.define('User', {
     uid: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
-      // primaryKey: true,
-      allowNull: false,
+      unique:true,
+      // allowNull: false,
     },
     first_name: {
       type: DataTypes.STRING,
@@ -59,8 +59,8 @@ const User = conn.define('User', {
 });
   
 const Business = conn.define('Business', {
-    user_id: {
-      type: DataTypes.STRING(255),
+    uid: {
+      type: DataTypes.STRING,
     },
     name: {
       type: DataTypes.STRING,
@@ -197,16 +197,16 @@ const Review = conn.define('Review', {
 //     underscored: true,
 // });
 
+User.hasOne(Business, {foreignKey:"uid", sourceKey:"uid"})
+Business.belongsTo(User, { foreignKey: 'uid' , targetKey:"uid"});
 
-// Profile.belongsTo(User, { foreignKey: 'user_id' });
-// Business.belongsTo(User, { foreignKey: 'user_id' });
 // Product.belongsTo(Business, { foreignKey: 'business_id' });
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
 // ProductImage.belongsTo(Product, { foreignKey: 'product_id' });
 // Catalogue.belongsTo(Business, { foreignKey: 'user_id' });
 
 async function sync(){
-  // await Profile.sync({alter:true})
+  
   // await Business.sync({alter:true})
   // await User.sync({alter:true})
   // await Review.sync({alter:true})
