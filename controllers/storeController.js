@@ -1,10 +1,14 @@
+const { fetchBusinessProfileQuery } = require("../db/query")
 const { success, generalError, notAcceptable } = require("../helpers/statusCodes")
 const { businessProfileValidator } = require("../helpers/validator")
 
 exports.updateBusinessProfile = async(req, res, next) =>{
-    const validator = businessProfileValidator.validate(req.body, {})
+
+    const uid = req?.user?.uid
+    const validator = businessProfileValidator.validate(req.body)
     // console.log(validator)
     if(validator?.error?.message)return notAcceptable(res, validator.error.message.replace(/['"]/g, ''))
+    
     success(res, {}, "sasdasda")
 }
 
@@ -22,5 +26,6 @@ exports.getStoreCategories = async(req, res, next) =>{
 }
 
 exports.fetchBusinessProfile = async(req, res, next) =>{
-
+    const uid = req?.user?.uid //user id
+    await fetchBusinessProfileQuery({uid})
 }

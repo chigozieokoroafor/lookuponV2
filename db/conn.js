@@ -4,15 +4,20 @@ const mysql = require('mysql2/promise');
 
 config();
 
+const isDevelopment = process.env.DEVELOPMENT === "true";
+
 const conn_option = {
-    database: process.env.MYSQL_ADDON_DB,
-    host: process.env.MYSQL_ADDON_HOST,
-    port: process.env.MYSQL_ADDON_PORT,
-    password: process.env.MYSQL_ADDON_PASSWORD,
-    username: process.env.MYSQL_ADDON_USER,
+    database: isDevelopment ? process.env.DB_NAME : process.env.MYSQL_ADDON_DB,
+    host: isDevelopment ? process.env.DB_HOST : process.env.MYSQL_ADDON_HOST,
+    port: isDevelopment ? process.env.DB_PORT : process.env.MYSQL_ADDON_PORT,
+    password: isDevelopment ? process.env.DB_PWD : process.env.MYSQL_ADDON_PASSWORD,
+    username: isDevelopment ? process.env.DB_USER : process.env.MYSQL_ADDON_USER,
     dialect: 'mysql',
-    logging: process.env.DB_LOGGING === 'true' // ensure this is a boolean
+    logging: isDevelopment, // ensure this is a boolean
 };
+
+console.log(conn_option)
+
 
 // console.log(conn_option);
 

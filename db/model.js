@@ -101,7 +101,7 @@ const Business = conn.define('Business', {
     },
     
   }, {
-    tableName: 'businesses',
+    tableName: 'business',
     timestamps: true,
     underscored: true,
 });
