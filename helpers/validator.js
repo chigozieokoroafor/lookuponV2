@@ -7,7 +7,10 @@ exports.businessProfileValidator  = joi.object({
     company_email:joi.string().pattern(new RegExp(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)).messages({
         "string.pattern.base":"Valid company email required"
     }),
-    category:joi.string(),
+    category:joi.array().min(1).messages({
+        "array.min":"Select at least one business category",
+        "array.base":"category to be passed as array"
+    }),
     phone:joi.string().pattern(new RegExp("^(234|0)\\d{9,15}$")).message("Valid phone number required"),
     description:joi.string(),
     website_url:joi.string().pattern(new RegExp(`^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$`)).message("Valid website url required"),

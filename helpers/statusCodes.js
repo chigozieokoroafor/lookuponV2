@@ -14,6 +14,10 @@ exports.success = (res, d, msg) => {
     return res.status(200).json({success:true, d, "msg":msg??""})
 }
 
+exports.created = (res, d, msg) => {
+    return res.status(201).json({success:true, "msg":msg??""})
+}
+
 exports.unAuthorized = (res, msg) => {
     return res.status(401).json({"msg":msg, success:false})
 }
@@ -33,8 +37,6 @@ exports.newError = (res, msg, statusC) =>{
 exports.exists = (res, msg) =>{
     return res.status(409).json({"msg":msg, success:false})
 }
-
-
 
 exports.internalServerError = (res, msg) =>{
     return res.status(500).json({"msg":msg, success:false})

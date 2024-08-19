@@ -70,7 +70,7 @@ exports.signin =async (req, res) => {
       return generalError(res, "Invalid credentials")
     }
 
-    const token = generateToken({ id: user.uid }, 1*60*60);
+    const token = generateToken({ uid: user.uid }, 1*60*60);
     return success(res, {token}, "")
   } catch (error) {
     console.error(error);

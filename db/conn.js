@@ -16,7 +16,7 @@ const conn_option = {
     logging: isDevelopment, // ensure this is a boolean
 };
 
-console.log(conn_option)
+// console.log(conn_option)
 
 
 // console.log(conn_option);
@@ -41,7 +41,7 @@ const sequelize = new Sequelize(conn_option.database, conn_option.username, conn
         port: conn_option.port,
         dialect: conn_option.dialect,
         logging: conn_option.logging,
-    });
+});
 
 async function authenticate(){
     try {

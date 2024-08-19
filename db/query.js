@@ -1,4 +1,4 @@
-const {User, Business} = require("./model")
+const {User, Business, BusinessHours} = require("./model")
 
 exports.createUser = async (data) =>{
     return await User.create(data)
@@ -17,6 +17,10 @@ exports.updateBusinessProfileQuery = async (query, update) =>{
 }
 
 exports.fetchBusinessProfileQuery = async (query, attributes) =>{
-    return await Business.findOne({where:query, attributes:attributes})
+    return await Business.findOne({where:query, attributes:attributes, include:{model:BusinessHours, required:false}})
+}
+
+exports.createBusinessProfile = async(data) =>{
+    return await Business.create(data)
 }
 

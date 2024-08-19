@@ -71,8 +71,8 @@ const Business = conn.define('Business', {
       allowNull: false,
     },
     category: {
-      type: DataTypes.STRING,
-      defaultValue: 'Food',
+      type: DataTypes.JSON,
+      // defaultValue: 'Food',
     },
     description: {
       type: DataTypes.TEXT,
@@ -99,12 +99,42 @@ const Business = conn.define('Business', {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    
+    total_reviews:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    },
+
+    review_count:{
+      type:DataTypes.JSON,
+      defaultValue:{
+        1:0,
+        2:0,
+        3:0,
+        4:0,
+        5:0,
+      }
+    }
+
   }, {
     tableName: 'business',
     timestamps: true,
     underscored: true,
 });
+
+const BusinessHours = conn.define("BusinessHour", {
+  businessId:{
+    type:DataTypes.INTEGER
+  },
+  open_hour:{
+    type:DataTypes.STRING
+  },
+  close_hour:{
+    type:DataTypes.STRING
+  },
+  day:{
+    type:DataTypes.STRING
+  }
+}, {tableName:"BusinessHour"})
   
 const Review = conn.define('Review', {
     reviewer_id: {
@@ -199,6 +229,9 @@ const Review = conn.define('Review', {
 
 User.hasOne(Business, {foreignKey:"uid", sourceKey:"uid"})
 Business.belongsTo(User, { foreignKey: 'uid' , targetKey:"uid"});
+Business.hasMany(BusinessHours, {foreignKey:"businessId", sourceKey:"id"})
+BusinessHours.belongsTo(Business, {foreignKey:"businessId", targetKey:"id"})
+
 
 // Product.belongsTo(Business, { foreignKey: 'business_id' });
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
@@ -209,18 +242,25 @@ async function sync(){
   
   // await Business.sync({alter:true})
   // await User.sync({alter:true})
+  // await BusinessHours.sync({alter:true})
   // await Review.sync({alter:true})
   // await Product.sync({alter:true})
   // await ProductImage.sync({alter:true})
   // await Catalogue.sync({alter:true})
 }
 
-sync()
+const isDevelopment = process.env.DEVELOPMENT === "true";
+
+if (!isDevelopment){
+  sync()
+}
+// sync()
 
 module.exports = {
     User,
     Business,
     Review,
+    BusinessHours
     // ProductImage,
     // Product,
     // Catalogue

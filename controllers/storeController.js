@@ -1,5 +1,6 @@
-const { fetchBusinessProfileQuery } = require("../db/query")
-const { success, generalError, notAcceptable } = require("../helpers/statusCodes")
+const { fetchBusinessProfileQuery, createBusinessProfile } = require("../db/query")
+const { P } = require("../helpers/consts")
+const { success, generalError, notAcceptable, created } = require("../helpers/statusCodes")
 const { businessProfileValidator } = require("../helpers/validator")
 
 exports.updateBusinessProfile = async(req, res, next) =>{
@@ -27,5 +28,28 @@ exports.getStoreCategories = async(req, res, next) =>{
 
 exports.fetchBusinessProfile = async(req, res, next) =>{
     const uid = req?.user?.uid //user id
-    await fetchBusinessProfileQuery({uid})
+    const busProfile = await fetchBusinessProfileQuery({uid}, [P.description, P.address, P.profile_url, P.name, P.category])
+    success(res, busProfile?busProfile:{}, "")
+}
+
+exports.createBusiness = async(req, res,next) =>{
+    const uid = req?.user?.uid //user id
+    
+    const validator = businessProfileValidator.validate(req.body)
+    // console.log(validator)
+    if(validator?.error?.message){
+        return notAcceptable(res, validator.error.message.replace(/['"]/g, ''))
+    }
+
+    const busProfile = await fetchBusinessProfileQuery({uid}, [P.id])
+    if (busProfile){
+        return generalError(res, "User has exisiting business already")
+    }
+    req.body.uid = uid
+    await createBusinessProfile(req.body)
+    created(res, "Business profile created")
+
+
+
+
 }
