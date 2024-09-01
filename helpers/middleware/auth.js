@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken")
-const { unAuthorized, generalError, expired, invalid, newError } = require("../helpers/statusCodes");
+const { unAuthorized, generalError, expired, invalid, newError } = require("../statusCodes");
+const { fetchBusinessProfileQuery } = require("../../db/query");
+const { P } = require("../consts");
 
 class Auth {
     secret = process.env.AUTH_SECRET
@@ -64,6 +66,22 @@ const baseAuth = (req, res, next) => {
     });
 }
 
+const busAuth = (req, res, next) =>{
+    new Auth(process.env.AUTH_KEY).auth(req, res, async () => {
+        if (req?.err?.err) {
+            return newError(res, req.err.err, req.err.status);
+        } else if (!req?.user?.uid) {
+            return unAuthorized(res, "Unauthorized");
+        }
+        const bus = await fetchBusinessProfileQuery(req.user, [P.id,])
+        if(!bus){
+            return generalError(res, "Route for business only")
+        }
+        req.user.bus = bus.toJSON()
+        next();
+    });
+}
+
 // const businessBaseAuth = (req, res, next)=>{
 //     new Auth(process.env.AUTH_KEY).auth(req, res, () => {
 //         if (req?.err?.err) {
@@ -89,4 +107,4 @@ const baseAuth = (req, res, next) => {
 //     });
 // }
 
-module.exports = { baseAuth }
+module.exports = { baseAuth, busAuth}

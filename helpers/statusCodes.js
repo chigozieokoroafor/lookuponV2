@@ -42,3 +42,7 @@ exports.internalServerError = (res, msg) =>{
     return res.status(500).json({"msg":msg, success:false})
 }
 
+exports.notModifiedError = (res) =>{
+    return res.status(304).json({"msg":"Not modified", success:false})
+}
+

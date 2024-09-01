@@ -125,14 +125,26 @@ const BusinessHours = conn.define("BusinessHour", {
   businessId:{
     type:DataTypes.INTEGER
   },
-  open_hour:{
-    type:DataTypes.STRING
+  Mon:{
+    type:DataTypes.JSON
   },
-  close_hour:{
-    type:DataTypes.STRING
+  Tue:{
+    type:DataTypes.JSON
   },
-  day:{
-    type:DataTypes.STRING
+  Wed:{
+    type:DataTypes.JSON
+  },
+  Thur:{
+    type:DataTypes.JSON
+  },
+  Fri:{
+    type:DataTypes.JSON
+  },
+  Sat:{
+    type:DataTypes.JSON
+  },
+  Sun:{
+    type:DataTypes.JSON
   }
 }, {tableName:"BusinessHour"})
   
@@ -229,7 +241,7 @@ const Review = conn.define('Review', {
 
 User.hasOne(Business, {foreignKey:"uid", sourceKey:"uid"})
 Business.belongsTo(User, { foreignKey: 'uid' , targetKey:"uid"});
-Business.hasMany(BusinessHours, {foreignKey:"businessId", sourceKey:"id"})
+Business.hasOne(BusinessHours, {foreignKey:"businessId", sourceKey:"id"})
 BusinessHours.belongsTo(Business, {foreignKey:"businessId", targetKey:"id"})
 
 
@@ -248,7 +260,7 @@ async function sync(){
   // await ProductImage.sync({alter:true})
   // await Catalogue.sync({alter:true})
 }
-
+sync()
 const isDevelopment = process.env.DEVELOPMENT === "true";
 
 if (!isDevelopment){

@@ -24,3 +24,14 @@ exports.createBusinessProfile = async(data) =>{
     return await Business.create(data)
 }
 
+exports.updateBusinessProfileQuery = async(query, update) =>{
+    return await Business.update(update, {where:query})
+}
+
+exports.uploadBusinessHourQuery = async(data) =>{
+    return await BusinessHours.create(data)
+}
+
+exports.updateBusinessHourQuery = async(business_id, update) =>{
+    return await BusinessHours.update(update, {where:{businessId:business_id}})
+}
