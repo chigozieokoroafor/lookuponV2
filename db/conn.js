@@ -43,16 +43,16 @@ const sequelize = new Sequelize(conn_option.database, conn_option.username, conn
         logging: conn_option.logging,
 });
 
-async function authenticate(){
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-}
+// async function authenticate(){
+//     try {
+//         await sequelize.authenticate();
+//         console.log('Connection has been established successfully.');
+//     } catch (error) {
+//         console.error('Unable to connect to the database:', error);
+//     }
+// }
 
-authenticate()
+// authenticate()
 
 module.exports = {
         conn: sequelize
