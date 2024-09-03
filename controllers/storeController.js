@@ -79,8 +79,8 @@ exports.uploadBusinessHours = async(req, res, next) =>{
     if(validator.error){
         return notAcceptable(res, validator.error.message.replace(/['"]/g, ''))
     }
-    console.log(req.user)
-    // body.businessId = req?.user?.bus?.id
+    // console.log(req.user)
+    body.businessId = req?.user?.bus?.id
     if (!req?.user?.bus?.BusinessHour){
         await uploadBusinessHourQuery(body)
         return success(res, {}, "Business hours uploaded")
