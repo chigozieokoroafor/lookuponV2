@@ -69,7 +69,7 @@ exports.uploadBusinessProfileImage = async(req, res, next) =>{
     }catch(error){
         console.log(error.message)
     }
-    success(res,d,"Business image updated")
+    success(res,{},"Business image updated")
 }
 
 exports.uploadBusinessHours = async(req, res, next) =>{
@@ -91,8 +91,10 @@ exports.uploadBusinessHours = async(req, res, next) =>{
       return success(res, {}, "Business hours updated")
     }
     
-    
-
 }
 
-// exports.fetchBusiness    
+// upnext
+
+// image upload
+
+// Catalogue

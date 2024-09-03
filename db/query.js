@@ -17,7 +17,7 @@ exports.updateBusinessProfileQuery = async (query, update) =>{
 }
 
 exports.fetchBusinessProfileQuery = async (query, attributes) =>{
-    return await Business.findOne({where:query, attributes:attributes, include:{model:BusinessHours, required:false}})
+    return await Business.findOne({where:query, attributes:attributes, include:{model:BusinessHours, required:false, attributes:["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]}})
 }
 
 exports.createBusinessProfile = async(data) =>{

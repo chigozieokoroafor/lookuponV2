@@ -1,53 +1,49 @@
-const multer = require("multer")
+const multer = require("multer");
 const fs = require("fs");
-const {generalError} = require("../statusCodes")
+const path = require("path");
+const { generalError } = require("../statusCodes");
 
 const maxSize = 2 * 1024 * 1024; // 2MB
 const allowedTypes = ['image/jpeg', 'image/png'];
 
-function uploadFilter(req, file,cb){
-    
-    // if (isUndefined(file)){
-    //     cb(new Error(`No file passed. ${file.originalname.split(".")[1]}`));
-    // }
-    if (!allowedTypes.includes(file.mimetype)){
-        
-        cb(new Error(`Invalid file type: Only JPEG and PNG files are allowed.  ${file.originalname.split(".")[1]}`));
+function uploadFilter(req, file, cb) {
+    if (!allowedTypes.includes(file.mimetype)) {
+        return cb(new Error(`Invalid file type: Only JPEG and PNG files are allowed. ${file.originalname.split(".")[1]}`));
     }
-    cb(null, true)
-    
+    cb(null, true);
 }
 
 const ProfileStorage = multer.diskStorage({
-    destination: (req, file, cb)=>{
-        cb(null, "temp/img/profile")
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, "../../temp/img/profile");
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true }); // Create the directory recursively
+        }
+        cb(null, dir);
     },
-    filename: (req, file, cb)=>{
-        
-        const file_name = `${req.user.uid}.${file.originalname.split(".")[1]}`
-        cb(null, file_name)
+    filename: (req, file, cb) => {
+        const fileExt = path.extname(file.originalname);
+        const fileName = `${req.user.uid}${fileExt}`;
+        cb(null, fileName);
     }
-})
+});
 
+const upload = multer({
+    storage: ProfileStorage,
+    limits: { fileSize: maxSize },
+    fileFilter: uploadFilter
+});
 
-
-// const upload = multer({dest:"temp/img/",limits:{fileSize:maxSize}, fileFilter:uploadFilter})
-const upload = multer({storage:ProfileStorage, limits:{fileSize:maxSize}, fileFilter:uploadFilter})
-
-// exports.upload = upload
 exports.profileuploadMiddleware = (req, res, next) => {
     const uploadFile = upload.single("file");
 
     uploadFile(req, res, (err) => {
         if (err) {
-            const errMessage = err.message.split(". ")     
-            console.log(errMessage)      
-            const filePath = `temp/img/profile/${req.user.uid}.${errMessage[1].trim()}` 
-            console.log(filePath)
+            const errMessage = err.message.split(". ");
+            const filePath = path.join(__dirname, `../../temp/img/profile/${req.user.uid}.${errMessage[1].trim()}`);
+
             if (fs.existsSync(filePath)) {
-                console.log("exists")
-                fs.unlinkSync(filePath, (unlinkErr) => {
-                    
+                fs.unlink(filePath, (unlinkErr) => {
                     if (unlinkErr) {
                         console.log("Error deleting file:", unlinkErr.message);
                     }
@@ -64,3 +60,59 @@ exports.profileuploadMiddleware = (req, res, next) => {
         next(); // Proceed to the next middleware or route handler
     });
 };
+
+// Custom file upload middleware
+// const fs = require("fs");
+// const multer = require("multer");
+
+// const maxSize = 2 * 1024 * 1024; // 2MB
+// const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+// function uploadFilter(req, file, cb){
+//   if (!allowedTypes.includes(file.mimetype)){
+//     cb(new Error('Invalid file type. Only JPEG, PNG, and PDF files are allowed.'));
+//   }else {
+//     cb(null, true)
+//   }
+// }
+// const upload = multer({dest:"tmp/docs/", limits:{fileSize:maxSize}, fileFilter:uploadFilter})
+
+
+
+// const docuploadMiddleware = (req, res, next) => {
+//   // Define the fields expected
+//   const uploadFields = upload.fields([
+//     { name: 'cac', maxCount: 1 },  // 'files' can contain up to 10 files
+//     { name: 'license', maxCount: 1 },
+//     { name: "others", maxCount:5} // 'documents' can contain up to 5 files
+//   ]);
+//   // Use multer upload instance
+//   uploadFields(req, res, (err) => {
+    
+//     if (err) {
+//       // fs.rmSync("tmp/docs/")
+//       return res.status(400).json({ error: err.message });
+//     }
+
+//     // Retrieve uploaded files
+//     const cac = req.files?.cac || [];
+//     const license = req.files?.license || [];
+//     const others  = req.files?.others || [];
+//     const allFiles = [...cac, ...license, ...others];
+    
+//     // Attach files to the request object
+
+//     req.body.docs = {"cac":cac[0] || {},
+//                     "license":license[0] || {},
+//                     "others":others[0] || [],
+//                   };
+//     req.doc_uploaded = allFiles.length >0
+    
+//     // Proceed to the next middleware or route handler
+//     next();
+//   });
+// };
+
+// module.exports = {
+//     docuploadMiddleware
+// }
