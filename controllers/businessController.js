@@ -45,6 +45,7 @@ exports.createBusiness = async(req, res,next) =>{
 
 }
 
+//  can be used to update the description only 
 exports.updateBusinessProfile = async(req, res, next) =>{
     const uid = req?.user?.uid
     const validator = businessProfileValidator.validate(req.body)
@@ -58,18 +59,6 @@ exports.updateBusinessProfile = async(req, res, next) =>{
     }
     
     success(res, {}, "Business profile updated")
-}
-
-// not tested yet
-exports.uploadBusinessProfileImage = async(req, res, next) =>{
-    const uid = req?.user?.uid
-    const file = req.body.user_file
-    try{
-        await updateBusinessProfileQuery({uid}, {profile_url:file})
-    }catch(error){
-        console.log(error.message)
-    }
-    success(res,{},"Business image updated")
 }
 
 exports.uploadBusinessHours = async(req, res, next) =>{
@@ -91,7 +80,6 @@ exports.uploadBusinessHours = async(req, res, next) =>{
     }
     
 }
-
 // upnext
 
 // image upload

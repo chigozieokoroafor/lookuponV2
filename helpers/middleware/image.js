@@ -2,6 +2,7 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const { generalError } = require("../statusCodes");
+const cloudinary = require("cloudinary").v2
 
 const maxSize = 2 * 1024 * 1024; // 2MB
 const allowedTypes = ['image/jpeg', 'image/png'];
@@ -61,6 +62,26 @@ exports.profileuploadMiddleware = (req, res, next) => {
     });
 };
 
+// test this out later
+exports.CloudinaryUpload = class{
+    static apiKey = process.env.CLOUDINARY_API_KEY
+    static apiSecret = process.env.CLOUDINARY_SECRET_KEY
+    static cloudname = process.env.CLOUDINARY_CLOUD_NAME
+
+    static async upload(filePath){
+        cloudinary.config({ 
+            cloud_name: 'dgpnmwhra', 
+            api_key: '795215954789167', 
+            api_secret: 'av-ntQ3CyPFntVaIlcNZlOfmJtI'
+          })
+        
+        const f = await cloudinary.uploader.upload(filePath)
+        console.log("F:::::", f)
+
+        return true
+
+    }
+}
 // Custom file upload middleware
 // const fs = require("fs");
 // const multer = require("multer");
@@ -76,7 +97,6 @@ exports.profileuploadMiddleware = (req, res, next) => {
 //   }
 // }
 // const upload = multer({dest:"tmp/docs/", limits:{fileSize:maxSize}, fileFilter:uploadFilter})
-
 
 
 // const docuploadMiddleware = (req, res, next) => {

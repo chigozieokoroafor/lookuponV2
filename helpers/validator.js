@@ -27,3 +27,25 @@ exports.businessHourValidator = joi.object({
     "Sat": joi.object({ open_hour: joi.string().pattern(new RegExp(`^(0[1-9]|1[0-2]):[0-5][0-9] ?[AaPp][Mm]$`)), close_hour: joi.string().pattern(new RegExp(`^(0[1-9]|1[0-2]):[0-5][0-9] ?[AaPp][Mm]$`))}),
     "Sun": joi.object({ open_hour: joi.string().pattern(new RegExp(`^(0[1-9]|1[0-2]):[0-5][0-9] ?[AaPp][Mm]$`)), close_hour: joi.string().pattern(new RegExp(`^(0[1-9]|1[0-2]):[0-5][0-9] ?[AaPp][Mm]$`))})
 })
+
+exports.catalogueUploadValidator = joi.object({
+    "name":joi.string().required().messages(
+        {
+            "any.required":"'name' of product required",
+            "string.empty":"'name' cannot be empty",
+            "string.base":"use a valid string"
+        }
+    ),
+    "price":joi.number().min(100).required().messages(
+        {
+            "any.required":"'price' of product required",
+            "number.empty":"'price' cannot be empty",
+            "number.base":"'price' must be a number",
+            "number.min":"'price' must be greater than 100"     
+        }
+    ),
+    "description":joi.string()
+    // "images":joi.alternatives()
+})
+
+// exports.catalogueUpdateValidator = joi.object().fork(this.catalogueUploadValidator)

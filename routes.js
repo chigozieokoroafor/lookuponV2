@@ -1,8 +1,10 @@
 const {Router} = require("express")
 const {createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify} = require("./controllers/baseController");
-const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessProfileImage, uploadBusinessHours } = require("./controllers/storeController");
+const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours } = require("./controllers/businessController");
 const { baseAuth, busAuth } = require("./helpers/middleware/auth");
 const { profileuploadMiddleware } = require("./helpers/middleware/image");
+const { uploadBusinessProfileImage } = require("./controllers/imageController");
+const { uploadCatalogue, fetchCatalogueList, editCatalogue } = require("./controllers/catalogueController");
 
 const router = Router();
 
@@ -18,4 +20,7 @@ router.post("/business/profile/create", baseAuth, createBusiness)
 router.post("/business/profile/photo/upload", busAuth, profileuploadMiddleware, uploadBusinessProfileImage)
 router.post("/business/profile/businesshour/upload", busAuth, uploadBusinessHours)
 
+router.post("/business/catalogue/upload", busAuth, uploadCatalogue)
+router.get("/business/catalogue/fetch", busAuth, fetchCatalogueList)
+// router.put("/business/catalogue/update", busAuth, editCatalogue)
 exports.router = router

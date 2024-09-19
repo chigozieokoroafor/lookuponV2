@@ -8,5 +8,8 @@ exports.P = {
     address:"address",
     phone:"phone",
     name:"name",
-    category:"category"
+    category:"category",
+    businessId:"businessId",
+    imageList:"imageList",
+    price:"price"
 }

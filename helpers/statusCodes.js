@@ -14,7 +14,7 @@ exports.success = (res, d, msg) => {
     return res.status(200).json({success:true, d, "msg":msg??""})
 }
 
-exports.created = (res, d, msg) => {
+exports.created = (res, msg) => {
     return res.status(201).json({success:true, "msg":msg??""})
 }
 

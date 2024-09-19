@@ -172,29 +172,37 @@ const Review = conn.define('Review', {
     underscored: true,
 });
 
-// const Product = conn.define('Product', {
-//     business_id: {
-//       type: DataTypes.INTEGER,
-//       allowNull: false,
-//           },
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: false,
-//     },
-//     price: {
-//       type: DataTypes.FLOAT,
-//       defaultValue: 0.0,
-//     },
-//     description: {
-//       type: DataTypes.TEXT,
-//       allowNull: true,
-//     },
+const Product = conn.define('Product', {
+    businessId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+          },
+    // uid:{
+    //   type:DataTypes.STRING
+    // },
+
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0.0,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    imageList:{
+      type:DataTypes.JSON,
+      defaultValue:[]
+    }
     
-//   }, {
-//     tableName: 'products',
-//     timestamps: true,
-//     underscored: true,
-// });
+  }, {
+    tableName: 'products',
+    // timestamps: true,
+    // underscored: true,
+});
   
 // const ProductImage = conn.define('ProductImage', {
     
@@ -245,24 +253,27 @@ Business.hasOne(BusinessHours, {foreignKey:"businessId", sourceKey:"id"})
 BusinessHours.belongsTo(Business, {foreignKey:"businessId", targetKey:"id"})
 
 
-// Product.belongsTo(Business, { foreignKey: 'business_id' });
+Product.belongsTo(Business, { foreignKey: 'businessId', targetKey:"id"});
+Business.hasMany(Product, {foreignKey: "businessId", sourceKey:"id"})
+
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
 // ProductImage.belongsTo(Product, { foreignKey: 'product_id' });
 // Catalogue.belongsTo(Business, { foreignKey: 'user_id' });
 
 async function sync(){
   
-  await Business.sync({alter:true})
-  await User.sync({alter:true})
-  await BusinessHours.sync({alter:true})
-  await Review.sync({alter:true})
-  // await Product.sync({alter:true})
+  // await Business.sync({alter:true})
+  // await User.sync({alter:true})
+  // await BusinessHours.sync({alter:true})
+  // await Review.sync({alter:true})
+  await Product.sync({alter:true})
   // await ProductImage.sync({alter:true})
   // await Catalogue.sync({alter:true})
 }
 
 const isDevelopment = process.env.DEVELOPMENT === "true";
 
+// console.log(isDevelopment)
 if (!isDevelopment){
   sync()
 }
@@ -272,9 +283,9 @@ module.exports = {
     User,
     Business,
     Review,
-    BusinessHours
+    BusinessHours,
     // ProductImage,
-    // Product,
+    Product,
     // Catalogue
 }
 
