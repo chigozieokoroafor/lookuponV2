@@ -54,8 +54,8 @@ exports.getCatalogue = async(bus_id, limit, offset) => {
     )
 }
 
-exports.updateCatalogue = async(cat_id, catalogue_update) =>{
-    return await Product.update(catalogue_update, {where:{id:cat_id}})
+exports.updateCatalogue = async(cat_id, bus_id, catalogue_update) =>{
+    return await Product.update(catalogue_update, {where:{id:cat_id, businessId:bus_id}})
 }
 
 exports.deleteCatalogue = async(cat_id, business_id) =>{

@@ -1,6 +1,6 @@
 const { createCatalogue, updateCatalogue, deleteCatalogue, getCatalogue } = require("../db/query")
 const { generalError, created, success } = require("../helpers/statusCodes")
-const { catalogueUploadValidator } = require("../helpers/validator")
+const { catalogueUploadValidator, catalogueUpdateValidator } = require("../helpers/validator")
 
 
 exports.uploadCatalogue = async(req, res, next) =>{
@@ -30,6 +30,22 @@ exports.uploadCatalogue = async(req, res, next) =>{
 }
 
 exports.editCatalogue = async (req, res, next) =>{
+    const catalogue_id = req?.params?.cat_id
+    if (!catalogue_id){
+        return generalError(res, "no selected catalogue")
+    }
+    const valid_ = catalogueUpdateValidator.validate(req?.body)
+    if (valid_?.error){
+        return generalError(res, valid_?.error?.message)
+    }
+
+    let update = await updateCatalogue(catalogue_id, req?.user?.bus?.id, req?.body)
+    if (!update[0]){
+        return generalError(res, "No update made")
+    }
+
+    return success(res, "", "Updated successfully")
+    
     
 }
 
@@ -46,4 +62,16 @@ exports.fetchCatalogueList = async (req, res, next) =>{
     return success(res, q, "")
 }
 
+exports.deleteSpecificCaatalogue = async(req, res, next) =>{
+    const catalogue_id = req?.params?.cat_id
+    if (!catalogue_id){
+        return generalError(res, "no selected catalogue")
+    }
+
+    let del = await deleteCatalogue(catalogue_id, req?.user?.bus?.id)
+    if (!del){
+        return generalError(res, "unable to delete" )
+    }
+    return success(res, "Catalogue deleted successfully")
+}
 // exports

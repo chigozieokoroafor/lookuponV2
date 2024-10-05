@@ -48,4 +48,14 @@ exports.catalogueUploadValidator = joi.object({
     // "images":joi.alternatives()
 })
 
+exports.catalogueUpdateValidator = joi.object({
+    "name":joi.string().message("use a valid string"),
+    "price":joi.number().min(100).messages({
+        "number.empty":"price cannot be empty",
+        "number.base":"price must be a number",
+        "number.min":"'price' must be greater than 100"
+    }),
+    "description":joi.string()
+})
+
 // exports.catalogueUpdateValidator = joi.object().fork(this.catalogueUploadValidator)
