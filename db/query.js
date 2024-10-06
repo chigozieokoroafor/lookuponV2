@@ -61,3 +61,7 @@ exports.updateCatalogue = async(cat_id, bus_id, catalogue_update) =>{
 exports.deleteCatalogue = async(cat_id, business_id) =>{
     return await Product.destroy({where:{id:cat_id, businessId:business_id}})
 }
+
+exports.createReview = async(body) =>{
+    
+}

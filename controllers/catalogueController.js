@@ -74,4 +74,5 @@ exports.deleteSpecificCaatalogue = async(req, res, next) =>{
     }
     return success(res, "Catalogue deleted successfully")
 }
-// exports
+
+// create a catalogue route for base users.

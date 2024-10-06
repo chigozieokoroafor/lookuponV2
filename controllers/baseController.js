@@ -1,10 +1,6 @@
-// contains auth
-// routes/auth.js
-const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { User, Profile } = require('../db/model');
-const { backend_url, destructureToken, createRedirectUrl, mailSend, generateToken } = require('../helpers/util');
+const { User } = require('../db/model');
+const { backend_url, destructureToken, mailSend, generateToken } = require('../helpers/util');
 const { createUser, getUser, updateUser } = require('../db/query');
 const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists, expired } = require('../helpers/statusCodes');
 

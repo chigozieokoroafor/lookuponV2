@@ -58,4 +58,7 @@ exports.catalogueUpdateValidator = joi.object({
     "description":joi.string()
 })
 
-// exports.catalogueUpdateValidator = joi.object().fork(this.catalogueUploadValidator)
+exports.reviewUploadValidator = joi.object({
+    rating:joi.number().required().message("rating required"),
+    review: joi.string().required().message("kindly leave a review")
+})
