@@ -163,4 +163,8 @@ exports.updatePassword = async (req, res) => {
   }
 };  
 
+exports.viewBusinesses = async(req, res, next ) => {
+    
+}
+
 

@@ -48,17 +48,27 @@ exports.catalogueUploadValidator = joi.object({
     // "images":joi.alternatives()
 })
 
+
 exports.catalogueUpdateValidator = joi.object({
-    "name":joi.string().message("use a valid string"),
-    "price":joi.number().min(100).messages({
-        "number.empty":"price cannot be empty",
-        "number.base":"price must be a number",
-        "number.min":"'price' must be greater than 100"
+    name: joi.string().messages({
+        "string.base": "Use a valid string"
     }),
-    "description":joi.string()
-})
+    price: joi.number().min(100).messages({
+        "number.base": "Price must be a number",
+        "number.empty": "Price cannot be empty",
+        "number.min": "'Price' must be greater than or equal to 100"
+    }),
+    description: joi.string().optional() // `optional()` makes it clear description isn't required
+});
+
 
 exports.reviewUploadValidator = joi.object({
-    rating:joi.number().required().message("rating required"),
-    review: joi.string().required().message("kindly leave a review")
-})
+    rating: joi.number().required().messages({
+        "any.required": "Rating is required",
+        "number.base": "Rating must be a number"
+    }),
+    review: joi.string().required().messages({
+        "any.required": "Kindly leave a review",
+        "string.base": "Review must be a valid string"
+    })
+});

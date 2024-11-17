@@ -19,8 +19,17 @@ exports.createReview = async(req, res, next) =>{
     }
 
     if (business_id == req?.user?.bus?.id){ // can't review self business
-        return generalError(res, "He he he....")
+        return generalError(res, "He he he 😈😈👻....Psych, you cant leave a review for your business.")
     }
 
     
+    
+}
+
+exports.fetchReviews = async(req, res, next)=>{
+
+}
+
+exports.deleteReviews = async(req, res, next) =>{
+
 }
