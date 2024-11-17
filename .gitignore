@@ -1,3 +1,5 @@
 node_modules
 .env
 association*
+temp/img/profile/*
+tmp/profile/*
