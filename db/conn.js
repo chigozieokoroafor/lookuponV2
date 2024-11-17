@@ -4,7 +4,7 @@ const mysql = require('mysql2/promise');
 
 config();
 
-const isDevelopment = process.env.DEVELOPMENT === "true";
+const isDevelopment = process.env.DEVELOPMENT == "true";
 
 const conn_option = {
     database: isDevelopment ? process.env.DB_NAME : process.env.MYSQL_ADDON_DB,

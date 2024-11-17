@@ -252,7 +252,6 @@ Business.belongsTo(User, { foreignKey: 'uid' , targetKey:"uid"});
 Business.hasOne(BusinessHours, {foreignKey:"businessId", sourceKey:"id"})
 BusinessHours.belongsTo(Business, {foreignKey:"businessId", targetKey:"id"})
 
-
 Product.belongsTo(Business, { foreignKey: 'businessId', targetKey:"id"});
 Business.hasMany(Product, {foreignKey: "businessId", sourceKey:"id"})
 
