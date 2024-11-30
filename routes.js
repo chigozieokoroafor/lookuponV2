@@ -12,6 +12,7 @@ router.post("/auth/createAccount", createAccount)
 router.post("/auth/signin", signin)
 router.post("/auth/passwordReset", requestPasswordReset)
 router.post('/auth/password/update', updatePassword)
+router.get("/auth/verify", verify)
 
 router.get("/business/category/fetch", getStoreCategories)
 router.put("/business/profile/update", busAuth, updateBusinessProfile)
