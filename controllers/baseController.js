@@ -30,7 +30,8 @@ exports.createAccount = async (req, res) => {
   
     const token = generateToken({email:email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
-    const verificationUri = `https://lookupon.vercel.app/verification?token=${token}`
+    // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
+    const verificationUri = `https://localhost:3000/verification?token=${token}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
     mailSend("Account verification",email, emailTemp);
 
@@ -117,7 +118,8 @@ exports.requestPasswordReset = async (req, res) => {
     }
     
     const token = generateToken({ email }, 1*5*60, process.env.PWD_RESET_KEY);
-    const PWD_RESET_URL = `https://lookupon.vercel.app/reset-password?token=${token}`
+    // const PWD_RESET_URL = `https://lookupon.vercel.app/reset-password?token=${token}`
+    const PWD_RESET_URL = `https://localhost:3000/reset-password?token=${token}`
     const emailTemp = `<p>Click <a href="${PWD_RESET_URL}">here</a> to reset your password.</p>`; // Adjust the email template as needed
     const mailSent =  mailSend(email, emailTemp, 'Password Reset Request');
 
