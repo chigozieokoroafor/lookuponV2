@@ -11,5 +11,6 @@ exports.P = {
     category:"category",
     businessId:"businessId",
     imageList:"imageList",
-    price:"price"
+    price:"price",
+    email:"email"
 }

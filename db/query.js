@@ -1,67 +1,91 @@
 const { P } = require("../helpers/consts")
-const {User, Business, BusinessHours, Product} = require("./model")
+const { reVerificationTag } = require("../helpers/util")
+const { User, Business, BusinessHours, Product, Verifications } = require("./model")
 
-exports.createUser = async (data) =>{
+exports.createUser = async (data) => {
     return await User.create(data)
 }
 
-exports.getUser = async(query) =>{
-    return User.findOne({"where":query})
+exports.getUser = async (query) => {
+    return User.findOne({ "where": query })
 }
 
-exports.updateUser = async(query, update) =>{
-    return User.update(update, {where:query})
+exports.updateUser = async (query, update) => {
+    return User.update(update, { where: query })
 }
 
-exports.updateBusinessProfileQuery = async (query, update) =>{
-    return await Business.update(update, {where:query})
+exports.updateBusinessProfileQuery = async (query, update) => {
+    return await Business.update(update, { where: query })
 }
 
-exports.fetchBusinessProfileQuery = async (query, attributes) =>{
-    return await Business.findOne({where:query, attributes:attributes, include:{model:BusinessHours, required:false, attributes:["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]}})
+exports.fetchBusinessProfileQuery = async (query, attributes) => {
+    return await Business.findOne({ where: query, attributes: attributes, include: { model: BusinessHours, required: false, attributes: ["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"] } })
 }
 
-exports.createBusinessProfile = async(data) =>{
+exports.createBusinessProfile = async (data) => {
     return await Business.create(data)
 }
 
-exports.updateBusinessProfileQuery = async(query, update) =>{
-    return await Business.update(update, {where:query})
+exports.updateBusinessProfileQuery = async (query, update) => {
+    return await Business.update(update, { where: query })
 }
 
-exports.uploadBusinessHourQuery = async(data) =>{
+exports.uploadBusinessHourQuery = async (data) => {
     return await BusinessHours.create(data)
 }
 
-exports.updateBusinessHourQuery = async(business_id, update) =>{
-    return await BusinessHours.update(update, {where:{businessId:business_id}})
+exports.updateBusinessHourQuery = async (business_id, update) => {
+    return await BusinessHours.update(update, { where: { businessId: business_id } })
 }
 
-exports.createCatalogue = async(catalogue_data) =>{
+exports.createCatalogue = async (catalogue_data) => {
     return await Product.create(catalogue_data)
 }
 
-exports.getCatalogue = async(bus_id, limit, offset) => {
+exports.getCatalogue = async (bus_id, limit, offset) => {
     return await Product.findAll(
         {
-            where:{
-                businessId:bus_id
-            }, 
-            attributes:[P.id, P.name, P.price, P.imageList, P.description ],
-            limit:limit, 
-            offset:offset
+            where: {
+                businessId: bus_id
+            },
+            attributes: [P.id, P.name, P.price, P.imageList, P.description],
+            limit: limit,
+            offset: offset
         }
     )
 }
 
-exports.updateCatalogue = async(cat_id, bus_id, catalogue_update) =>{
-    return await Product.update(catalogue_update, {where:{id:cat_id, businessId:bus_id}})
+exports.updateCatalogue = async (cat_id, bus_id, catalogue_update) => {
+    return await Product.update(catalogue_update, { where: { id: cat_id, businessId: bus_id } })
 }
 
-exports.deleteCatalogue = async(cat_id, business_id) =>{
-    return await Product.destroy({where:{id:cat_id, businessId:business_id}})
+exports.deleteCatalogue = async (cat_id, business_id) => {
+    return await Product.destroy({ where: { id: cat_id, businessId: business_id } })
 }
 
-exports.createReview = async(body) =>{
+exports.createReview = async (body) => {
+
+}
+
+exports.getBusinessUserDashboard = async (category, skip) => {
+    await Business.findAll({ where: {}, limit: 10, offset: skip })
+}
+
+exports.createVerificationTagForUser = async (email) =>{
+    let ext = reVerificationTag()
+    try{
+        await Verifications.create({email: email, tag:ext})
+    }catch(error){
+        await Verifications.update({tag:ext}, {where:{email}})
+    }
+    return ext
+}
+
+exports.getUserByVerificationtag = async (tag) => {
+    return await Verifications.findOne(
+        {
+            where: { tag }
+        }
+    )
     
 }

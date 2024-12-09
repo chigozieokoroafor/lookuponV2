@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../db/model');
-const { backend_url, destructureToken, mailSend, generateToken } = require('../helpers/util');
-const { createUser, getUser, updateUser } = require('../db/query');
+const { backend_url, destructureToken, mailSend, generateToken, reVerificationTag } = require('../helpers/util');
+const { createUser, getUser, updateUser, getUserByVerificationtag, createVerificationTagForUser } = require('../db/query');
 const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists, expired } = require('../helpers/statusCodes');
 
 
@@ -26,12 +26,22 @@ exports.createAccount = async (req, res) => {
       first_name,
       last_name,
     }
-    const user = await createUser(data)
-  
+    let ext
+    const resolved = await Promise.allSettled([createUser(data), createVerificationTagForUser(email)])
+    
+    if (resolved[0].status == "rejected"){
+      return generalError(res, "Unable to create Account, Please try at a later time.")
+    }
+    if (resolved[1].status){
+      ext = resolved[1].value
+    }
+    
+    
     const token = generateToken({email:email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
+
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
-    const verificationUri = `https://localhost:3000/verification?token=${token}`
+    const verificationUri = `http://localhost:3000/verification?token=${token}&ext=${ext}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
     mailSend("Account verification",email, emailTemp);
 
@@ -87,18 +97,7 @@ exports.verify = async (req, res) => {
   }
 
   try {
-    const update = await updateUser({email:data})
-    console.log(update)
-
-    // const user = await User.findByPk(data.id);
-    // if (!user) {
-    //   return res.status(404).json({ msg: "Account with credentials provided doesn't exist" });
-    // }
-
-    // user.account_verified = true;
-    // await user.save();
-
-    // res.send('<p>Welcome! Your account has been verified.</p>'); // Adjust the welcome template as needed
+    const update = await updateUser({email:data}, {account_verified:true})
     return success(res, {}, "Verified")
   } catch (error) {
     console.error(error);
@@ -163,10 +162,30 @@ exports.updatePassword = async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Error occurred while updating password' });
   }
-};  
+}; 
 
-exports.viewBusinesses = async(req, res, next ) => {
-    
+exports.resendLink = async (req, res) => {
+  const { ext } = req.query;
+  getUserByVerificationtag(ext).then( async (data)=>{
+    const new_ext = await createVerificationTagForUser(email)
+
+    const token = generateToken({email:data?.email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
+
+    // const verificationUri = backend_url+`/auth/verify?token=${token}`
+    // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
+    const verificationUri = `http://localhost:3000/verification?token=${token}&ext=${new_ext}`
+    const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
+
+    mailSend("Account verification",email, emailTemp);
+
+    return success(res, {}, "Link sent")
+  }).catch((reason)=>{
+    return generalError(res, "Unable to send verification Link")
+  })
 }
+
+// exports.viewBusinesses = async(req, res, next ) => {
+    
+// }
 
 

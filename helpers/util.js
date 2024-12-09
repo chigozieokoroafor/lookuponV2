@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
+const crypto =  require("crypto")
 
 const secret= process.env.AUTH_KEY
 
@@ -64,3 +65,8 @@ exports.destructureToken = (token, s) => {
   
   }
 };
+
+exports.reVerificationTag = () =>{
+  const randomBytes = crypto.randomBytes(15); // 15 bytes = 30 hex characters
+  return randomBytes.toString('hex').slice(0, 20);
+}
