@@ -167,7 +167,12 @@ exports.updatePassword = async (req, res) => {
 exports.resendLink = async (req, res) => {
   const { ext } = req.query;
   getUserByVerificationtag(ext).then( async (data)=>{
-    const new_ext = await createVerificationTagForUser(email)
+
+    if (!data){
+      return notFound(res, "Account not found")
+    }
+
+    const new_ext = await createVerificationTagForUser(data?.email)
 
     const token = generateToken({email:data?.email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
 
@@ -175,11 +180,12 @@ exports.resendLink = async (req, res) => {
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
     const verificationUri = `http://localhost:3000/verification?token=${token}&ext=${new_ext}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
-
-    mailSend("Account verification",email, emailTemp);
+    console.log("Account verification",data?.email, emailTemp)
+    mailSend("Account verification",data?.email, emailTemp);
 
     return success(res, {}, "Link sent")
   }).catch((reason)=>{
+    // console.log(reason)
     return generalError(res, "Unable to send verification Link")
   })
 }

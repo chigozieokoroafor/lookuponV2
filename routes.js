@@ -1,5 +1,5 @@
 const {Router} = require("express")
-const {createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify} = require("./controllers/baseController");
+const {createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify, resendLink} = require("./controllers/baseController");
 const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours } = require("./controllers/businessController");
 const { baseAuth, busAuth } = require("./helpers/middleware/auth");
 const { profileuploadMiddleware } = require("./helpers/middleware/image");
@@ -13,6 +13,7 @@ router.post("/auth/signin", signin)
 router.post("/auth/passwordReset", requestPasswordReset)
 router.post('/auth/password/update', updatePassword)
 router.get("/auth/verify", verify)
+router.get("/auth/verify/resend", resendLink)
 
 router.get("/business/category/fetch", getStoreCategories)
 router.put("/business/profile/update", busAuth, updateBusinessProfile)

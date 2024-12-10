@@ -81,10 +81,11 @@ exports.createVerificationTagForUser = async (email) =>{
     return ext
 }
 
+
 exports.getUserByVerificationtag = async (tag) => {
     return await Verifications.findOne(
         {
-            where: { tag }
+            where: { "tag":tag }
         }
     )
     
