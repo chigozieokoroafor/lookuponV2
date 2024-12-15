@@ -12,5 +12,9 @@ exports.P = {
     businessId:"businessId",
     imageList:"imageList",
     price:"price",
-    email:"email"
+    email:"email",
+    total_reviews:"total_reviews",
+    review_count:"review_count",
+    review:"review",
+    rating:"rating"
 }

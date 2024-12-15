@@ -1,10 +1,11 @@
-const {Router} = require("express")
-const {createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify, resendLink} = require("./controllers/baseController");
-const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours } = require("./controllers/businessController");
+const { Router } = require("express")
+const { createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify, resendLink } = require("./controllers/authController");
+const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours, fetchBusinesses } = require("./controllers/businessController");
 const { baseAuth, busAuth } = require("./helpers/middleware/auth");
 const { profileuploadMiddleware } = require("./helpers/middleware/image");
 const { uploadBusinessProfileImage } = require("./controllers/imageController");
 const { uploadCatalogue, fetchCatalogueList, editCatalogue } = require("./controllers/catalogueController");
+const { uploadReview } = require("./controllers/reviewsController");
 
 const router = Router();
 
@@ -15,6 +16,8 @@ router.post('/auth/password/update', updatePassword)
 router.get("/auth/verify", verify)
 router.get("/auth/verify/resend", resendLink)
 
+router.get("/business/fetch", fetchBusinesses)
+
 router.get("/business/category/fetch", getStoreCategories)
 router.put("/business/profile/update", busAuth, updateBusinessProfile)
 router.get("/business/profile/fetch", busAuth, fetchBusinessProfile)
@@ -24,5 +27,9 @@ router.post("/business/profile/businesshour/upload", busAuth, uploadBusinessHour
 
 router.post("/business/catalogue/upload", busAuth, uploadCatalogue)
 router.get("/business/catalogue/fetch", busAuth, fetchCatalogueList)
+
+router.post("/review/create", baseAuth, uploadReview)
+router.get("/review/create", baseAuth, uploadReview)
+router.get("/review/create", baseAuth, uploadReview)
 // router.put("/business/catalogue/update", busAuth, editCatalogue)
 exports.router = router

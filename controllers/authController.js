@@ -77,7 +77,7 @@ exports.signin =async (req, res) => {
       return generalError(res, "Invalid credentials")
     }
 
-    const token = generateToken({ uid: user.uid }, 1*60*60);
+    const token = generateToken({ uid: user.uid }, 1*600*60);
     return success(res, {token}, "")
   } catch (error) {
     console.error(error);
@@ -189,9 +189,4 @@ exports.resendLink = async (req, res) => {
     return generalError(res, "Unable to send verification Link")
   })
 }
-
-// exports.viewBusinesses = async(req, res, next ) => {
-    
-// }
-
 

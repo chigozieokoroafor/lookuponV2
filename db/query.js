@@ -1,6 +1,6 @@
 const { P } = require("../helpers/consts")
 const { reVerificationTag } = require("../helpers/util")
-const { User, Business, BusinessHours, Product, Verifications } = require("./model")
+const { User, Business, BusinessHours, Product, Verifications, Review } = require("./model")
 
 exports.createUser = async (data) => {
     return await User.create(data)
@@ -20,6 +20,37 @@ exports.updateBusinessProfileQuery = async (query, update) => {
 
 exports.fetchBusinessProfileQuery = async (query, attributes) => {
     return await Business.findOne({ where: query, attributes: attributes, include: { model: BusinessHours, required: false, attributes: ["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"] } })
+}
+
+exports.getAllBusiness = async (offset, limit) => {
+    const specBusinessHour = new Date().getUTCDay() // to get specific day to avoid fetching all days.
+    const allDays = {
+        0:"Sun",
+        1:"Mon",
+        2:"Tue",
+        3:"Wed",
+        4:"Thur",
+        5:"Fri",
+        6:"Sat"
+    }
+    
+    return Business.findAll(
+        {
+            attributes: [P.name, P.profile_url, P.website_url, P.total_reviews, P.review_count, P.id],
+            include: [
+                {
+                    model: Review,
+                    attributes: [P.review, P.rating]
+                },
+                {
+                    model: BusinessHours,
+                    attributes:[`${allDays[specBusinessHour]}`]
+                }
+            ],
+            limit,
+            offset
+        }
+    )
 }
 
 exports.createBusinessProfile = async (data) => {
@@ -63,20 +94,20 @@ exports.deleteCatalogue = async (cat_id, business_id) => {
     return await Product.destroy({ where: { id: cat_id, businessId: business_id } })
 }
 
-exports.createReview = async (body) => {
-
+exports.createReview = async (data) => {
+    return await Review.create(data)
 }
 
 exports.getBusinessUserDashboard = async (category, skip) => {
     await Business.findAll({ where: {}, limit: 10, offset: skip })
 }
 
-exports.createVerificationTagForUser = async (email) =>{
-    let ext = reVerificationTag()
-    try{
-        await Verifications.create({email: email, tag:ext})
-    }catch(error){
-        await Verifications.update({tag:ext}, {where:{email}})
+exports.createVerificationTagForUser = async (email) => {
+    const ext = reVerificationTag()
+    try {
+        await Verifications.create({ email: email, tag: ext })
+    } catch (error) {
+        await Verifications.update({ tag: ext }, { where: { email } })
     }
     return ext
 }
@@ -85,8 +116,8 @@ exports.createVerificationTagForUser = async (email) =>{
 exports.getUserByVerificationtag = async (tag) => {
     return await Verifications.findOne(
         {
-            where: { "tag":tag }
+            where: { "tag": tag }
         }
     )
-    
+
 }

@@ -146,7 +146,8 @@ const BusinessHours = conn.define("BusinessHour", {
   Sun: {
     type: DataTypes.JSON
   }
-}, { tableName: "BusinessHour" })
+}, { tableName: "BusinessHour" }
+)
 
 const Review = conn.define('Review', {
   reviewer_id: {
@@ -267,6 +268,8 @@ BusinessHours.belongsTo(Business, { foreignKey: "businessId", targetKey: "id" })
 Product.belongsTo(Business, { foreignKey: 'businessId', targetKey: "id" });
 Business.hasMany(Product, { foreignKey: "businessId", sourceKey: "id" })
 
+Review.belongsTo(Business, { foreignKey: "businessId", targetKey: "id" })
+Business.hasMany(Review, { foreignKey: "businessId", sourceKey: "id" })
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
 // ProductImage.belongsTo(Product, { foreignKey: 'product_id' });
 // Catalogue.belongsTo(Business, { foreignKey: 'user_id' });

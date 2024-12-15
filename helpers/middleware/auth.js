@@ -13,7 +13,7 @@ class Auth {
     }
 
     auth = (req, res, next) => {
-        
+
 
         if (!req?.headers?.authorization) {
             return unAuthorized(res, "Request unauthorized");
@@ -31,10 +31,10 @@ class Auth {
 
         let err;
         let err_status;
-        
+
         try {
             const payload = jwt.verify(token, this.secret);
-            
+
             req.user = payload.payload; // Store the payload in the request
             return next(); // Call next to proceed if token is valid
         } catch (error) {
@@ -66,7 +66,7 @@ const baseAuth = (req, res, next) => {
     });
 }
 
-const busAuth = (req, res, next) =>{
+const busAuth = (req, res, next) => {
     new Auth(process.env.AUTH_KEY).auth(req, res, async () => {
         if (req?.err?.err) {
             return newError(res, req.err.err, req.err.status);
@@ -74,7 +74,7 @@ const busAuth = (req, res, next) =>{
             return unAuthorized(res, "Unauthorized");
         }
         const bus = await fetchBusinessProfileQuery(req.user, [P.id,])
-        if(!bus){
+        if (!bus) {
             return generalError(res, "Route for business only")
         }
         req.user.bus = bus.toJSON()
@@ -89,7 +89,7 @@ const busAuth = (req, res, next) =>{
 //         } else if (!req?.user?.uid) {
 //             return unAuthorized(res, "Unauthorized");
 //         }
-        
+
 
 //         next();
 //     });
@@ -97,7 +97,7 @@ const busAuth = (req, res, next) =>{
 
 // const student_auth = (req, res, next) => {
 //     new Auth(process.env.STUDENT_SECRET).auth(req, res, () => {
-        
+
 //         if (req?.err?.err) {
 //             return newError(res, req.err.err, req.err.status);
 //         } else if (!req?.user?.matric_no) {
@@ -107,4 +107,4 @@ const busAuth = (req, res, next) =>{
 //     });
 // }
 
-module.exports = { baseAuth, busAuth}
+module.exports = { baseAuth, busAuth }
