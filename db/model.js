@@ -151,10 +151,10 @@ const BusinessHours = conn.define("BusinessHour", {
 
 const Review = conn.define('Review', {
   reviewer_id: {
-    type: DataTypes.UUID,
+    type: DataTypes.STRING(255),
     allowNull: false,
   },
-  business_id: {
+  businessId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -166,6 +166,10 @@ const Review = conn.define('Review', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  reply:{
+    type: DataTypes.TEXT,
+    allowNull:true
+  }
 
 }, {
   tableName: 'reviews',
@@ -270,16 +274,20 @@ Business.hasMany(Product, { foreignKey: "businessId", sourceKey: "id" })
 
 Review.belongsTo(Business, { foreignKey: "businessId", targetKey: "id" })
 Business.hasMany(Review, { foreignKey: "businessId", sourceKey: "id" })
+
+Review.belongsTo(User, { foreignKey: "reviewer_id", targetKey: "uid" })
+User.hasMany(Review, {foreignKey: "reviewer_id", sourceKey: "uid"})
+
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
 // ProductImage.belongsTo(Product, { foreignKey: 'product_id' });
 // Catalogue.belongsTo(Business, { foreignKey: 'user_id' });
 
 async function sync() {
 
-  // await Business.sync({alter:true})
-  // await User.sync({alter:true})
+  await Business.sync({alter:true})
+  await User.sync({alter:true})
   // await BusinessHours.sync({alter:true})
-  // await Review.sync({alter:true})
+  await Review.sync({alter:true})
   // await Product.sync({alter:true})
   // await ProductImage.sync({alter:true})
   // await Catalogue.sync({alter:true})
