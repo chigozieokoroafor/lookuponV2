@@ -20,7 +20,7 @@ exports.getStoreCategories = async (req, res, next) => {
 exports.fetchBusinessProfile = async (req, res, next) => {
     const uid = req?.user?.uid //user id
     const busProfile = await fetchBusinessProfileQuery({ uid }, [P.description, P.address, P.profile_url, P.name, P.category])
-    success(res, busProfile ? busProfile : {}, "")
+    return success(res, busProfile ? busProfile : {}, "")
 }
 
 exports.createBusiness = async (req, res, next) => {

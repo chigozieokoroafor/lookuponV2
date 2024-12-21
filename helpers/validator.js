@@ -69,6 +69,7 @@ exports.reviewUploadValidator = joi.object({
     }),
     review: joi.string().required().messages({
         "any.required": "Kindly leave a review",
-        "string.base": "Review must be a valid string"
+        "string.base": "Review must be a valid string",
+        "string.empty": "Review cannot be empty"
     })
 });

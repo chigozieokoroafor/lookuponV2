@@ -275,7 +275,7 @@ Business.hasMany(Product, { foreignKey: "businessId", sourceKey: "id" })
 Review.belongsTo(Business, { foreignKey: "businessId", targetKey: "id" })
 Business.hasMany(Review, { foreignKey: "businessId", sourceKey: "id" })
 
-Review.belongsTo(User, { foreignKey: "reviewer_id", targetKey: "uid" })
+Review.belongsTo(User, { foreignKey: "reviewer_id", targetKey: "uid", as:"reviewer"})
 User.hasMany(Review, {foreignKey: "reviewer_id", sourceKey: "uid"})
 
 // ProductImage.belongsTo(Business, { foreignKey: 'owner_id' });
@@ -286,7 +286,7 @@ async function sync() {
 
   await Business.sync({alter:true})
   await User.sync({alter:true})
-  // await BusinessHours.sync({alter:true})
+  await BusinessHours.sync({alter:true})
   await Review.sync({alter:true})
   // await Product.sync({alter:true})
   // await ProductImage.sync({alter:true})

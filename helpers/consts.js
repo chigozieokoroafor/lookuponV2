@@ -1,6 +1,8 @@
 exports.P = {
     id:"id",
     uid:"uid",
+    first_name:"first_name",
+    last_name:"last_name",
     company_email:"company_email",
     description:"description",
     website_url:"website_url",
@@ -16,5 +18,7 @@ exports.P = {
     total_reviews:"total_reviews",
     review_count:"review_count",
     review:"review",
-    rating:"rating"
+    rating:"rating",
+    reply:"reply",
+    createdAt:"createdAt"
 }

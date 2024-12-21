@@ -98,6 +98,30 @@ exports.createReview = async (data) => {
     return await Review.create(data)
 }
 
+exports.getAllReviewsForBusiness = async(bid, limit, offset) =>{
+    return await Review.findAll(
+        {
+            where:{businessId:bid},
+            attributes:[P.id, P.review, P.rating, P.reply, P.createdAt],
+            include:[{
+                model:User,
+                attributes:[P.first_name, P.last_name, P.profile_url, P.uid],
+                as:"reviewer"
+            }],
+            limit, 
+            offset
+        }
+    )
+}
+
+exports.getSpecificReview = async(bid, review_id) =>{
+    return await Review.findOne({where:{businessId:bid, id:review_id}})
+}
+
+exports.addReplyToReview = async(rid, bId, reply) => {
+    return await Review.update({reply:reply}, {where:{id:rid, businessId:bId}})
+}
+
 exports.getBusinessUserDashboard = async (category, skip) => {
     await Business.findAll({ where: {}, limit: 10, offset: skip })
 }
@@ -111,7 +135,6 @@ exports.createVerificationTagForUser = async (email) => {
     }
     return ext
 }
-
 
 exports.getUserByVerificationtag = async (tag) => {
     return await Verifications.findOne(
