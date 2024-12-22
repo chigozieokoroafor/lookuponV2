@@ -10,6 +10,8 @@ exports.P = {
     address:"address",
     phone:"phone",
     name:"name",
+    gender:"gender",
+    alias:"alias",
     category:"category",
     businessId:"businessId",
     imageList:"imageList",

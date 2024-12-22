@@ -1,5 +1,9 @@
 // django code
 
+const { getUser, getUserWithSpecificAttributes } = require("../db/query")
+const { P } = require("../helpers/consts")
+const { success } = require("../helpers/statusCodes")
+
 // @api_view(["GET"])
 // @authentication_classes([JWTAuthentication])
 // def get_profile(request:HttpRequest):
@@ -28,3 +32,10 @@
 //         return Response({"message":"Profile updated"}, status.HTTP_200_OK)
 
 //     return Response({"message":"Unable to update profile"}, status.HTTP_400_BAD_REQUEST)
+
+
+exports.fetchProfile = async(req, res, next) =>{
+    const user = await getUserWithSpecificAttributes({uid:req?.user?.uid }, [P.first_name, P.last_name, P.email, P.alias, P.gender, P.profile_url])
+
+    return success(res, user,"testing")
+}

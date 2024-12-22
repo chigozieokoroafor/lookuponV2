@@ -10,6 +10,10 @@ exports.getUser = async (query) => {
     return User.findOne({ "where": query })
 }
 
+exports.getUserWithSpecificAttributes = async (query, attributes) => {
+    return User.findOne({ "where": query , attributes:attributes})
+}
+
 exports.updateUser = async (query, update) => {
     return User.update(update, { where: query })
 }
