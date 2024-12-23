@@ -73,3 +73,20 @@ exports.reviewUploadValidator = joi.object({
         "string.empty": "Review cannot be empty"
     })
 });
+
+exports.profileValidator = joi.object({
+    "first_name": joi.string().min(2).messages({
+        "string.min": "first name cannot be less that 2 characters"
+    }),
+
+    "last_name": joi.string().min(2).messages({
+        "string.min": "last name cannot be less that 2 characters"
+    }),
+
+    "alias": joi.string().min(2).messages({
+        "string.min": "alias name cannot be less that 2 characters"
+    }),
+
+    "gender":joi.string().pattern(new RegExp(`^[MF]$`)).message("Kindly select a valid gender option: M, F")
+
+})

@@ -1,8 +1,9 @@
 // django code
 
-const { getUser, getUserWithSpecificAttributes } = require("../db/query")
+const { getUser, getUserWithSpecificAttributes, updateUser } = require("../db/query")
 const { P } = require("../helpers/consts")
-const { success } = require("../helpers/statusCodes")
+const { success, generalError } = require("../helpers/statusCodes")
+const { profileValidator } = require("../helpers/validator")
 
 // @api_view(["GET"])
 // @authentication_classes([JWTAuthentication])
@@ -37,5 +38,19 @@ const { success } = require("../helpers/statusCodes")
 exports.fetchProfile = async(req, res, next) =>{
     const user = await getUserWithSpecificAttributes({uid:req?.user?.uid }, [P.first_name, P.last_name, P.email, P.alias, P.gender, P.profile_url])
 
-    return success(res, user,"testing")
+    return success(res, user,"")
+}
+
+exports.updateProfile = async(req, res, next) =>{
+    const valid_ = profileValidator.validate(req?.body)
+
+    if (valid_?.error){
+        return generalError(res, valid_?.error?.message.replace(/['"]/g, ''))
+    }
+
+    const update = await updateUser({uid: req?.user?.uid}, req?.body )
+    if (! update){
+        return generalError(res, "No change detected")
+    }
+    return success(res, {}, "Profile updated")
 }

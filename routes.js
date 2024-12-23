@@ -6,7 +6,7 @@ const { profileuploadMiddleware } = require("./helpers/middleware/image");
 const { uploadBusinessProfileImage } = require("./controllers/imageController");
 const { uploadCatalogue, fetchCatalogueList, editCatalogue } = require("./controllers/catalogueController");
 const { uploadReview, fetchReviews, replyReviews } = require("./controllers/reviewsController");
-const { fetchProfile } = require("./controllers/profileController");
+const { fetchProfile, updateProfile } = require("./controllers/profileController");
 
 const router = Router();
 
@@ -17,7 +17,8 @@ router.post('/auth/password/update', updatePassword)
 router.get("/auth/verify", verify)
 router.get("/auth/verify/resend", resendLink)
 
-router.get("/profile/fetch", baseAuth, fetchProfile)
+router.get("/user/profile/fetch", baseAuth, fetchProfile)
+router.patch("/user/profile/update", baseAuth, updateProfile)
 
 router.get("/business/fetch", fetchBusinesses)
 
