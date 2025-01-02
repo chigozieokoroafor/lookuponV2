@@ -71,7 +71,7 @@ const Business = conn.define('Business', {
     allowNull: false,
   },
   category: {
-    type: DataTypes.JSON,
+    type: DataTypes.STRING(255),
     // defaultValue: 'Food',
   },
   description: {

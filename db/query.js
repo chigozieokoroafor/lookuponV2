@@ -26,6 +26,10 @@ exports.fetchBusinessProfileQuery = async (query, attributes) => {
     return await Business.findOne({ where: query, attributes: attributes, include: { model: BusinessHours, required: false, attributes: ["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"] } })
 }
 
+// exports.fetchSpecBusinessProfileQuery = async (query, attributes) => {
+//     return await Business.findOne({ where: query, attributes: attributes, include: { model: BusinessHours, required: false, attributes: ["businessId", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"] } })
+// }
+
 exports.getAllBusiness = async (offset, limit) => {
     const specBusinessHour = new Date().getUTCDay() // to get specific day to avoid fetching all days.
     const allDays = {
@@ -147,4 +151,11 @@ exports.getUserByVerificationtag = async (tag) => {
         }
     )
 
+}
+
+exports.textSearch =  async (regex_string) =>{
+    // this doesn't work as meant to... and don't know why
+    const query_string = `SELECT * FROM business WHERE REGEXP_LIKE(name, '${regex_string}') OR REGEXP_LIKE(category, '${regex_string}') ;`
+    // const query_string = `SELECT * FROM Business WHERE REGEXP_LIKE(name, '${regex_string}') ;`
+    return (await Business.sequelize?.query(query_string))[0]
 }

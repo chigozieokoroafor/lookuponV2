@@ -1,6 +1,6 @@
 const { Router } = require("express")
 const { createAccount, signin, requestPasswordReset, sendVerification, updatePassword, verify, resendLink } = require("./controllers/authController");
-const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours, fetchBusinesses } = require("./controllers/businessController");
+const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours, fetchBusinesses, searchBusiness } = require("./controllers/businessController");
 const { baseAuth, busAuth } = require("./helpers/middleware/auth");
 const { profileuploadMiddleware } = require("./helpers/middleware/image");
 const { uploadBusinessProfileImage } = require("./controllers/imageController");
@@ -38,6 +38,9 @@ router.get("/review/create", baseAuth, uploadReview)
 
 router.post("/review/reply/create", busAuth, replyReviews)
 router.patch("/review/reply/edit", busAuth, replyReviews)
+
+router.post("/business/search", searchBusiness)
+// searchBusiness
 
 // router.put("/business/catalogue/update", busAuth, editCatalogue)
 exports.router = router

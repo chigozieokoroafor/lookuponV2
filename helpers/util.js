@@ -70,3 +70,13 @@ exports.reVerificationTag = () => {
   const randomBytes = crypto.randomBytes(15); // 15 bytes = 30 hex characters
   return randomBytes.toString('hex').slice(0, 20);
 }
+
+exports.createRegex = txt =>{
+  txt  = txt.replace(" ", "\\s*")
+  const escapedInput = txt.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+
+  // Build a regex pattern that matches the entire word or parts of it, case-insensitively
+  // return new RegExp(`\\b${escapedInput}\\b|${escapedInput}`, 'i');
+  return `\\b${escapedInput}\\b|${escapedInput}`
+  // return 
+}
