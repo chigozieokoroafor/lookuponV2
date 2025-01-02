@@ -11,7 +11,7 @@ exports.getUser = async (query) => {
 }
 
 exports.getUserWithSpecificAttributes = async (query, attributes) => {
-    return User.findOne({ "where": query , attributes:attributes})
+    return User.findOne({ "where": query, attributes: attributes })
 }
 
 exports.updateUser = async (query, update) => {
@@ -33,15 +33,15 @@ exports.fetchBusinessProfileQuery = async (query, attributes) => {
 exports.getAllBusiness = async (offset, limit) => {
     const specBusinessHour = new Date().getUTCDay() // to get specific day to avoid fetching all days.
     const allDays = {
-        0:"Sun",
-        1:"Mon",
-        2:"Tue",
-        3:"Wed",
-        4:"Thur",
-        5:"Fri",
-        6:"Sat"
+        0: "Sun",
+        1: "Mon",
+        2: "Tue",
+        3: "Wed",
+        4: "Thur",
+        5: "Fri",
+        6: "Sat"
     }
-    
+
     return Business.findAll(
         {
             attributes: [P.name, P.profile_url, P.website_url, P.total_reviews, P.review_count, P.id],
@@ -52,7 +52,7 @@ exports.getAllBusiness = async (offset, limit) => {
                 },
                 {
                     model: BusinessHours,
-                    attributes:[`${allDays[specBusinessHour]}`]
+                    attributes: [`${allDays[specBusinessHour]}`]
                 }
             ],
             limit,
@@ -106,28 +106,28 @@ exports.createReview = async (data) => {
     return await Review.create(data)
 }
 
-exports.getAllReviewsForBusiness = async(bid, limit, offset) =>{
+exports.getAllReviewsForBusiness = async (bid, limit, offset) => {
     return await Review.findAll(
         {
-            where:{businessId:bid},
-            attributes:[P.id, P.review, P.rating, P.reply, P.createdAt],
-            include:[{
-                model:User,
-                attributes:[P.first_name, P.last_name, P.profile_url, P.uid],
-                as:"reviewer"
+            where: { businessId: bid },
+            attributes: [P.id, P.review, P.rating, P.reply, P.createdAt],
+            include: [{
+                model: User,
+                attributes: [P.first_name, P.last_name, P.profile_url, P.uid],
+                as: "reviewer"
             }],
-            limit, 
+            limit,
             offset
         }
     )
 }
 
-exports.getSpecificReview = async(bid, review_id) =>{
-    return await Review.findOne({where:{businessId:bid, id:review_id}})
+exports.getSpecificReview = async (bid, review_id) => {
+    return await Review.findOne({ where: { businessId: bid, id: review_id } })
 }
 
-exports.addReplyToReview = async(rid, bId, reply) => {
-    return await Review.update({reply:reply}, {where:{id:rid, businessId:bId}})
+exports.addReplyToReview = async (rid, bId, reply) => {
+    return await Review.update({ reply: reply }, { where: { id: rid, businessId: bId } })
 }
 
 exports.getBusinessUserDashboard = async (category, skip) => {
@@ -153,9 +153,21 @@ exports.getUserByVerificationtag = async (tag) => {
 
 }
 
-exports.textSearch =  async (regex_string) =>{
-    // this doesn't work as meant to... and don't know why
-    const query_string = `SELECT * FROM business WHERE REGEXP_LIKE(name, '${regex_string}') OR REGEXP_LIKE(category, '${regex_string}') ;`
+exports.textSearch = async (regex_string, category, rating, limit, offset) => {
+    // search, can search for products and return businesses that offer such products. -> TBD
+    let query_string ;
+
+    if (regex_string)query_string = `SELECT * FROM business WHERE REGEXP_LIKE(name, '${regex_string}') OR REGEXP_LIKE(category, '${regex_string}') `;
+
     // const query_string = `SELECT * FROM Business WHERE REGEXP_LIKE(name, '${regex_string}') ;`
+    if (category) {
+        query_string = query_string ? `AND category='${category}' ` :  `SELECT * FROM Business WHERE category='${category}'`
+    }
+    if (rating) {
+        query_string = query_string ? `AND rating BETWEEN ${parseFloat(rating - 1)} AND ${parseFloat(rating)} ` :  `SELECT * FROM Business WHERE rating BETWEEN ${parseFloat(rating - 1)} AND ${parseFloat(rating)} `
+    }
+
+    query_string += ` LIMIT ${limit} OFFSET ${offset};`
+
     return (await Business.sequelize?.query(query_string))[0]
 }

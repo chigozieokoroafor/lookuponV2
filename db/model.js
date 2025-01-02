@@ -99,6 +99,12 @@ const Business = conn.define('Business', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  rating:{
+    type: DataTypes.DOUBLE,
+    defaultValue:0.0,
+    allowNull:false
+  },
+
   total_reviews: {
     type: DataTypes.INTEGER,
     defaultValue: 0

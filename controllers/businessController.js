@@ -114,11 +114,25 @@ exports.searchBusiness = async(req, res, next) =>{
     const location = req?.body?.location
     const rating = req?.body?.rating
     const text = req?.body?.text
+    const page = req?.query?.page
+    let offset
+    const limit = 20
+    
+    if (!page){
+        offset = 0
+    }else if (parseInt(page) < 1){
+        return generalError(res, "Page starts from 1")
+    }
+    else{
+        offset = (page - 1) * limit
+    }
 
     // if length of text is greater than 5, use exact match
     // if length of text is less than or equal to 5, use regex partial search
-    const txt = createRegex(text)
-    const res_ = await textSearch(txt)
+    let txt
+    if (text)txt = createRegex(text) ; 
+
+    const res_ = await textSearch(txt, category, rating, limit, offset )
     res_.forEach(bus => {bus.category = bus?.category?.split(",")})
     return success(res, res_,"")
 
