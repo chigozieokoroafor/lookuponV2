@@ -37,7 +37,7 @@ exports.createAccount = async (req, res) => {
     }
     
     
-    const token = generateToken({email:email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
+    const token = generateToken({email:email}, 1*60*60, process.env.ACC_VERIFICATION_KEY)
 
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
@@ -90,14 +90,15 @@ exports.signin =async (req, res) => {
 exports.verify = async (req, res) => {
   const { token } = req.query;
 
-  const data = destructureToken(token, 'email_verification');
+  const data = destructureToken(token, process.env.ACC_VERIFICATION_KEY);
+  
   if (!data) {
     // return res.status(410).json({ msg: 'Verification Link expired, Kindly request for another to verify account' });
     return expired(res, "Session expired")
   }
 
   try {
-    const update = await updateUser({email:data}, {account_verified:true})
+    const update = await updateUser({email:data?.email}, {account_verified:true})
     return success(res, {}, "Verified")
   } catch (error) {
     console.error(error);
@@ -120,7 +121,13 @@ exports.requestPasswordReset = async (req, res) => {
     // const PWD_RESET_URL = `https://lookupon.vercel.app/reset-password?token=${token}`
     const PWD_RESET_URL = `https://localhost:3000/reset-password?token=${token}`
     const emailTemp = `<p>Click <a href="${PWD_RESET_URL}">here</a> to reset your password.</p>`; // Adjust the email template as needed
-    const mailSent =  mailSend(email, emailTemp, 'Password Reset Request');
+    let mailSent
+    try{
+      mailSent =  mailSend('Password Reset Request', email, emailTemp);
+    }catch(error){
+      console.log("error::::", error)
+      return internalServerError(res, "Internal server error")
+    }
 
     if (!mailSent) {
       return res.status(400).json({ msg: 'Error occurred while sending mail' });
@@ -174,7 +181,7 @@ exports.resendLink = async (req, res) => {
 
     const new_ext = await createVerificationTagForUser(data?.email)
 
-    const token = generateToken({email:data?.email}, 1*5*60, process.env.ACC_VERIFICATION_KEY)
+    const token = generateToken({email:data?.email}, 1*60*60, process.env.ACC_VERIFICATION_KEY)
 
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live

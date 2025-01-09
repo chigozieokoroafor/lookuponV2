@@ -40,8 +40,9 @@ exports.mailSend = (subject, to, html, attachments) => { //attachments should be
     }
 
     smtpTransport.sendMail(mailOptions);
+    return true
   } catch (err) {
-    console.log('sendEmail', err.message);
+    console.log('sendEmail:::::', err.message);
   }
 }
 
