@@ -3,7 +3,7 @@ const { createAccount, signin, requestPasswordReset, sendVerification, updatePas
 const { updateBusinessProfile, getStoreCategories, fetchBusinessProfile, createBusiness, uploadBusinessHours, fetchBusinesses, searchBusiness } = require("./controllers/businessController");
 const { baseAuth, busAuth } = require("./helpers/middleware/auth");
 const { profileuploadMiddleware } = require("./helpers/middleware/image");
-const { uploadBusinessProfileImage } = require("./controllers/imageController");
+const { uploadBusinessProfileImage, uploadProfileImage } = require("./controllers/imageController");
 const { uploadCatalogue, fetchCatalogueList, editCatalogue } = require("./controllers/catalogueController");
 const { uploadReview, fetchReviews, replyReviews } = require("./controllers/reviewsController");
 const { fetchProfile, updateProfile } = require("./controllers/profileController");
@@ -19,6 +19,7 @@ router.get("/auth/verify/resend", resendLink)
 
 router.get("/user/profile/fetch", baseAuth, fetchProfile)
 router.patch("/user/profile/update", baseAuth, updateProfile)
+router.post("/user/profile/image", baseAuth, uploadProfileImage)
 
 router.get("/business/fetch", fetchBusinesses)
 

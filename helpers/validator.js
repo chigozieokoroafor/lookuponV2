@@ -87,6 +87,10 @@ exports.profileValidator = joi.object({
         "string.min": "alias name cannot be less that 2 characters"
     }),
 
-    "gender":joi.string().pattern(new RegExp(`^[MF]$`)).message("Kindly select a valid gender option: M, F")
+    "gender":joi.string().pattern(new RegExp(`^[MF]$`)).message("Kindly select a valid gender option: M, F"),
+
+    "img": joi.string()
+    // add image to this... bs 64
+
 
 })

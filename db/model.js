@@ -44,9 +44,9 @@ const User = conn.define('User', {
     defaultValue: 'M',
   },
   profile_url: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
-    defaultValue: '',
+    // defaultValue: '',
   },
   is_business: {
     type: DataTypes.BOOLEAN,
@@ -83,9 +83,9 @@ const Business = conn.define('Business', {
     allowNull: true,
   },
   profile_url: {
-    type: DataTypes.STRING,
+    type: DataTypes.BLOB,
     allowNull: true,
-    defaultValue: '',
+    // defaultValue: '',
   },
   phone_verified: {
     type: DataTypes.BOOLEAN,
@@ -306,7 +306,7 @@ const isDevelopment = process.env.DEVELOPMENT == "true";
 if (!isDevelopment) {
   sync()
 }
-// sync()
+sync()
 
 module.exports = {
   User,
