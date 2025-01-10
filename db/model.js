@@ -290,14 +290,14 @@ User.hasMany(Review, {foreignKey: "reviewer_id", sourceKey: "uid"})
 
 async function sync() {
 
-  await Business.sync({alter:true})
-  await User.sync({alter:true})
-  await BusinessHours.sync({alter:true})
-  await Review.sync({alter:true})
+  // await Business.sync({alter:true})
+  // await User.sync({alter:true})
+  // await BusinessHours.sync({alter:true})
+  // await Review.sync({alter:true})
   // await Product.sync({alter:true})
-  // await ProductImage.sync({alter:true})
-  // await Catalogue.sync({alter:true})
-  await Verifications.sync({ alter: true })
+  // // await ProductImage.sync({alter:true})
+  // // await Catalogue.sync({alter:true})
+  // await Verifications.sync({ alter: true })
 }
 
 const isDevelopment = process.env.DEVELOPMENT == "true";
