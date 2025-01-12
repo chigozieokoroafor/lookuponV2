@@ -3,7 +3,7 @@ const { User } = require('../db/model');
 const { backend_url, destructureToken, mailSend, generateToken, reVerificationTag } = require('../helpers/util');
 const { createUser, getUser, updateUser, getUserByVerificationtag, createVerificationTagForUser } = require('../db/query');
 const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists, expired } = require('../helpers/statusCodes');
-const data = require("../LOOKUPON.waitlist.json")
+// const data = require("../LOOKUPON.waitlist.json")
 const fs = require("fs")
 
 // Create Account
@@ -198,23 +198,23 @@ exports.resendLink = async (req, res) => {
 }
 
 
-exports.sendBetaMails = (req, res) =>{
-  const file = fs.readFileSync("./invite template mail.html")
-  try{
-    data.forEach(email =>{
-      try{
-        mailSend("It's time-Lookupon Beta is here",email.email, file)
-      }catch(mail_error){
-        console.log("error::::", mail_error)
-      }
-      console.log("done:::", email.email)
-    })
-    // mailSend("Testing", "okoroaforc14@gmail.com", file)
-  }catch(error){
-    console .log("error:::", error)
-    return generalError(res, "Error")
-  }
-  return success(res, "", "")
+// exports.sendBetaMails = (req, res) =>{
+//   const file = fs.readFileSync("./invite template mail.html")
+//   try{
+//     data.forEach(email =>{
+//       try{
+//         mailSend("It's time-Lookupon Beta is here",email.email, file)
+//       }catch(mail_error){
+//         console.log("error::::", mail_error)
+//       }
+//       console.log("done:::", email.email)
+//     })
+//     // mailSend("Testing", "okoroaforc14@gmail.com", file)
+//   }catch(error){
+//     console .log("error:::", error)
+//     return generalError(res, "Error")
+//   }
+//   return success(res, "", "")
   
-}
+// }
 
