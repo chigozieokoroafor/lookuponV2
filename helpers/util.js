@@ -30,7 +30,7 @@ exports.mailSend = (subject, to, html, attachments) => { //attachments should be
     });
 
     const mailOptions = {
-      from: `"Lookupon" <${process.env.MAIL_USER}>`, // sender address
+      from:process.env.MAIL_USER, // sender address
       to, // list of receivers
       subject, // Subject line
       html,  // html body

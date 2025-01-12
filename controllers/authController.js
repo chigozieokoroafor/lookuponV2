@@ -3,8 +3,8 @@ const { User } = require('../db/model');
 const { backend_url, destructureToken, mailSend, generateToken, reVerificationTag } = require('../helpers/util');
 const { createUser, getUser, updateUser, getUserByVerificationtag, createVerificationTagForUser } = require('../db/query');
 const { success, notAcceptable, notFound, invalid, internalServerError, generalError, exists, expired } = require('../helpers/statusCodes');
-
-
+const data = require("../LOOKUPON.waitlist.json")
+const fs = require("fs")
 
 // Create Account
 exports.createAccount = async (req, res) => {
@@ -41,7 +41,7 @@ exports.createAccount = async (req, res) => {
 
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
-    const verificationUri = `http://localhost:3000/verification?token=${token}&ext=${ext}`
+    const verificationUri = `https://lookupon.xyz/verification?token=${token}&ext=${ext}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
     mailSend("Account verification",email, emailTemp);
 
@@ -119,7 +119,7 @@ exports.requestPasswordReset = async (req, res) => {
     
     const token = generateToken({ email }, 1*5*60, process.env.PWD_RESET_KEY);
     // const PWD_RESET_URL = `https://lookupon.vercel.app/reset-password?token=${token}`
-    const PWD_RESET_URL = `https://localhost:3000/reset-password?token=${token}`
+    const PWD_RESET_URL = `https://lookupon.xyz/reset-password?token=${token}`
     const emailTemp = `<p>Click <a href="${PWD_RESET_URL}">here</a> to reset your password.</p>`; // Adjust the email template as needed
     let mailSent
     try{
@@ -185,7 +185,7 @@ exports.resendLink = async (req, res) => {
 
     // const verificationUri = backend_url+`/auth/verify?token=${token}`
     // const verificationUri = `https://lookupon.vercel.app/verification?token=${token}` // live
-    const verificationUri = `http://localhost:3000/verification?token=${token}&ext=${new_ext}`
+    const verificationUri = `https://lookupon.xyz/verification?token=${token}&ext=${new_ext}`
     const emailTemp = `<p>Click <a href="${verificationUri}">here</a> to verify your email.</p>`; // Adjust the email template as needed
     console.log("Account verification",data?.email, emailTemp)
     mailSend("Account verification",data?.email, emailTemp);
@@ -195,5 +195,26 @@ exports.resendLink = async (req, res) => {
     // console.log(reason)
     return generalError(res, "Unable to send verification Link")
   })
+}
+
+
+exports.sendBetaMails = (req, res) =>{
+  const file = fs.readFileSync("./invite template mail.html")
+  try{
+    data.forEach(email =>{
+      try{
+        mailSend("It's time-Lookupon Beta is here",email.email, file)
+      }catch(mail_error){
+        console.log("error::::", mail_error)
+      }
+      console.log("done:::", email.email)
+    })
+    // mailSend("Testing", "okoroaforc14@gmail.com", file)
+  }catch(error){
+    console .log("error:::", error)
+    return generalError(res, "Error")
+  }
+  return success(res, "", "")
+  
 }
 
